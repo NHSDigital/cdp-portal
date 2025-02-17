@@ -1,0 +1,21 @@
+.notification-blue {
+  background-color: #dce6f1;
+  border-left: 8px solid;
+  border-left-color: #005eb8;
+}
+.notification-red {
+  background-color: #f8d7da;
+  border-left: 8px solid;
+  border-left-color: #8a1538;
+}
+.notification-yellow {
+  background-color: #fff3cd;
+  border-left: 8px solid;
+  border-left-color: #ffb81c;
+}
+.notification {
+  color: #0a0a0a;
+  margin-top: 1rem;
+  position: relative;
+  padding: 0.75rem 1.25rem;
+}
