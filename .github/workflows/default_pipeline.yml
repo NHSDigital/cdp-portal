@@ -1,0 +1,61 @@
+name: Default Pipeline
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+
+env:
+  PYTHON_VERSION: 3.9.12
+  POETRY_VERSION: 1.7.0
+
+jobs:
+  check-secrets:
+    name: Secret Detection Scan
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    - name: Install git secrets
+      run: |
+        chmod +x ./scripts/git_secrets_download.sh ./scripts/git_secrets_install.sh
+        sudo ./scripts/git_secrets_download.sh
+        sudo ./scripts/git_secrets_install.sh
+        git secrets --add-provider -- cat ./nhsd-rules-deny.txt || echo "ALREADY ADDED PROVIDER"
+
+    - name: Run git secrets scan
+      run: git secrets --scan
+
+  validate-terraform:
+    name: Trivy Terraform Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner in IaC mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          exit-code: '1'
+          severity: 'UNKNOWN,LOW,MEDIUM,CRITICAL,HIGH'
+          format: 'table'
+          hide-progress: false
+          ignore-unfixed: true
+
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarqube-scan-action@v4.2.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}          

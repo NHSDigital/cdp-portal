@@ -1,0 +1,14 @@
+.*git-secrets/.*:*
+.*terraform\.tfstate.*:*
+.*.svg:*
+.*.jquery.*.js:*
+.*engine_version*
+.*127.0.0.1*
+.*assembly: AssemblyVersion*
+.*assembly: AssemblyFileVersion*
+.*Version=*
+.*token = "test(-|_)token".*
+\.gitallowed.*:*
+nhsd-rules-deny\.txt.*:*
+.*gitsecrets:ignore.*
+.*CI_JOB_TOKEN.*
