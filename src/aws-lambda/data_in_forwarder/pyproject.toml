@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "data-in-forwarder"
+version = "0.1.0"
+description = ""
+authors = ["First Last<first.last@example.com>"]
+readme = "README.md"
+packages = [{include = "data_in_forwarder"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+boto3 = "^1.26.86"
+aws-lambda-powertools = "^2.9.1"
+jinja2 = "^3.1.2"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.1.1"
+black = "^23.1.0"
+pylint = "^2.17.0"
+pytest = "^7.2.2"
+pytest-cov = "^4.0.0"
+moto = "^4.1.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "./data_in_forwarder"
+]

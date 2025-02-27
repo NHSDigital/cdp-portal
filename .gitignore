@@ -1,0 +1,53 @@
+.idea/
+.venv/
+*venv/
+**/build
+**/dist
+**/__pycache__
+**/*.pyc
+**/*.egg-info
+build/
+dist/
+*.egg-info/
+**/airflow/dags/
+**/airflow/plugins/
+**/*.whl
+**/src/nhsd/
+.pytest_cache/
+.env
+
+# Terraform
+.terraform
+terraform.tfstate*
+*.tfplan
+
+# Certs
+*.pem
+*.pfx
+*.srl*
+*.csr.cfg
+*.csr
+*id_rsa*
+ca.conf
+index.txt*
+ca.bundle.pem
+scripts/self_signed_certs/**/*.crl
+scripts/self_signed_certs/**/*.crt
+scripts/self_signed_certs/**/*.key
+
+pip-wheel-metadata
+/src/nhsd/
+/.smoke-tests-venv/
+*.coverage
+.vscode/settings.json
+terraform/root_modules/4_apigw/*
+data/*
+.local-env/*
+
+# node
+node_modules/
+.next/
+
+# cypress
+**/cypress/videos/
+**/cypress/screenshots/
