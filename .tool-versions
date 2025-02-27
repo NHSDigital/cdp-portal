@@ -1,0 +1,6 @@
+terraform 1.10.2
+awscli 2.15.38
+nodejs 20.11.1
+poetry 1.4.2
+python 3.9.12
+trivy 0.58.0
