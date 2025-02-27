@@ -1,0 +1,41 @@
+.fullPageHeight {
+  min-height: 100vh;
+}
+
+.logoutButton {
+  margin-bottom: 5px !important;
+  margin-top: -3px !important;
+  padding: 2px 15px !important;
+}
+
+.userDetails {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+
+.loggedInAs {
+  color: #fff;
+  padding: 2px 0;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.navigationList {
+  justify-content: flex-start !important;
+}
+.listItemRightMargin:not(:last-child) {
+  margin-right: 100px !important;
+}
+
+.changeAgreementBar {
+  background-color: #ffffff;
+}
+.breadcrumbNoSeperator::after {
+  content: none !important;
+}
+.linkFloatRight {
+  float: right;
+}

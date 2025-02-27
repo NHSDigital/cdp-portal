@@ -1,0 +1,69 @@
+.button-as-link {
+  background: none !important;
+  border: none;
+  padding: 0 !important;
+  color: #069;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.file-upload {
+  font-family: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 16px;
+  font-size: 1rem;
+  line-height: 1.25;
+  color: #0b0c0c;
+  max-width: 100%;
+  margin-left: -5px;
+  padding: 5px;
+}
+@media print {
+  .file-upload {
+    font-family: sans-serif;
+  }
+}
+@media (min-width: 40.0625em) {
+  .file-upload {
+    font-size: 19px;
+    font-size: 1.1875rem;
+    line-height: 1.3157894737;
+  }
+}
+@media print {
+  .file-upload {
+    font-size: 14pt;
+    line-height: 1.15;
+    color: #000;
+  }
+}
+.file-upload::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  color: inherit;
+  font: inherit;
+}
+.file-upload:focus {
+  outline: 3px solid #fd0;
+  box-shadow: inset 0 0 0 4px #0b0c0c;
+}
+.file-upload:focus-within {
+  outline: 3px solid #fd0;
+  box-shadow: inset 0 0 0 4px #0b0c0c;
+}
+.file-upload:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.agreementButtonList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+}
+
+.agreementButton {
+  width: 400px;
+}
