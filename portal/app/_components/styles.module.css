@@ -1,0 +1,9 @@
+/* Success Banner */
+.alert_panel_green {
+  border: solid 4px #007f3a;
+  padding: 10px;
+  width: 600px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}

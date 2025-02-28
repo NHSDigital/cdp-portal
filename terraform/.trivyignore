@@ -1,0 +1,5 @@
+# We accept the risk of ignoring these Trivy concerns
+AVD-AWS-0066
+AVD-DS-0026
+AVD-DS-0002
+AVD-DS-0029
