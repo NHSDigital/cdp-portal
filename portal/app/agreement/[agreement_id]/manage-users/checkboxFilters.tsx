@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import HiddenInputsForExistingSearchParams from "./hiddenInputsForExistingSearchParams";
-import useHasJavascript from "app/shared/useHasJavascript";
-import { CHECKBOX_FILTERS } from "./consts";
-import styles from "./manage-users.module.css";
-import { CheckboxInputFieldProps } from "app/shared/formFields";
+import { CheckboxInputFieldProps } from 'app/shared/formFields';
+import useHasJavascript from 'app/shared/useHasJavascript';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
+import { CHECKBOX_FILTERS } from './consts';
+import HiddenInputsForExistingSearchParams from './hiddenInputsForExistingSearchParams';
+import styles from './manage-users.module.css';
 
 export interface FilterOption {
   name: string;
@@ -32,23 +33,23 @@ export function CheckboxSmallInputField({
   onChange,
 }: CheckboxInputFieldProps) {
   const checkbox_input_id = `${button_group}-${button_value.replaceAll(
-    " ",
-    "-"
+    ' ',
+    '-',
   )}`;
   return (
     <div className={styles.checkboxes_small__item}>
       <input
         className={styles.checkboxes_small__input}
-        id={checkbox_input_id + "-input"}
+        id={checkbox_input_id + '-input'}
         name={button_group}
-        type="checkbox"
+        type='checkbox'
         value={button_value}
         defaultChecked={default_checked}
         onChange={onChange}
       />
       <label
-        className={styles.checkboxes_small__label + " nhsuk-label"}
-        htmlFor={checkbox_input_id + "-input"}
+        className={styles.checkboxes_small__label + ' nhsuk-label'}
+        htmlFor={checkbox_input_id + '-input'}
       >
         {label}
       </label>
@@ -62,10 +63,10 @@ function FilterGroup({ id, name, options }: Filter) {
   return (
     <form>
       <HiddenInputsForExistingSearchParams exclude={id} />
-      <div className="nhsuk-form-group">
-        <fieldset className="nhsuk-fieldset">
-          <legend className="nhsuk-fieldset_legend">
-            <h3 className="nhsuk-heading-xs nhsuk-u-margin-bottom-2">{name}</h3>
+      <div className='nhsuk-form-group'>
+        <fieldset className='nhsuk-fieldset'>
+          <legend className='nhsuk-fieldset_legend'>
+            <h3 className='nhsuk-heading-xs nhsuk-u-margin-bottom-2'>{name}</h3>
           </legend>
           <div className={styles.checkboxes_small__small}>
             {options.map((option) => (
@@ -75,9 +76,9 @@ function FilterGroup({ id, name, options }: Filter) {
         </fieldset>
         {hasJs || (
           <button
-            className="nhsuk-button nhsuk-button--secondary nhsuk-u-margin-top-3"
-            data-module="nhsuk-button"
-            type="submit"
+            className='nhsuk-button nhsuk-button--secondary nhsuk-u-margin-top-3'
+            data-module='nhsuk-button'
+            type='submit'
           >
             Filter by {name.toLowerCase()}
           </button>
@@ -100,7 +101,7 @@ function FilterOption({ name, id, filter_group_id }: FilterOptionProps) {
   const pathname = usePathname();
 
   function handleChange(checked: boolean) {
-    const new_params = new URLSearchParams(search_params || "");
+    const new_params = new URLSearchParams(search_params || '');
     if (checked) {
       new_params.append(filter_group_id, id);
     } else {

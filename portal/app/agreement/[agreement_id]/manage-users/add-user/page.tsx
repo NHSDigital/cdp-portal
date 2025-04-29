@@ -1,14 +1,12 @@
-import { Metadata } from "next";
-import React from "react";
-import { getLogger } from "app/../helpers/logging/logger";
-import AddUserForm from "./addUserForm";
-import submitAddUserForm from "app/agreement/[agreement_id]/manage-users/add-user/submitAddUserForm";
-import { redirect } from "next/navigation";
+import submitAddUserForm from 'app/agreement/[agreement_id]/manage-users/add-user/submitAddUserForm';
+import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import React from 'react';
 
-const logger = getLogger("addUserForm");
+import AddUserForm from './addUserForm';
 
 export const metadata: Metadata = {
-  title: "Add a new user",
+  title: 'Add a new user',
 };
 
 export interface AddUserPageProps {
@@ -23,12 +21,12 @@ export default async function AddUserPage({
   let form_id = searchParams.form_id;
   let user_id = searchParams.user_id;
 
-  if (typeof form_id !== "string" || typeof user_id !== "string") {
-    form_id = typeof form_id === "string" ? form_id : createRandomId();
-    user_id = typeof user_id === "string" ? user_id : createRandomId();
+  if (typeof form_id !== 'string' || typeof user_id !== 'string') {
+    form_id = typeof form_id === 'string' ? form_id : createRandomId();
+    user_id = typeof user_id === 'string' ? user_id : createRandomId();
 
     redirect(
-      `/agreement/${params.agreement_id}/manage-users/add-user?form_id=${form_id}&user_id=${user_id}`
+      `/agreement/${params.agreement_id}/manage-users/add-user?form_id=${form_id}&user_id=${user_id}`,
     );
   }
 
@@ -36,8 +34,8 @@ export default async function AddUserPage({
   addUserAction = addUserAction.bind(null, form_id);
   addUserAction = addUserAction.bind(null, user_id);
   return (
-    <div className="nhsuk-grid-row">
-      <div className="nhsuk-grid-column-three-quarters">
+    <div className='nhsuk-grid-row'>
+      <div className='nhsuk-grid-column-three-quarters'>
         <AddUserForm
           agreement_id={params.agreement_id}
           addUserAction={addUserAction}

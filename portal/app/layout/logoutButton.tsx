@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { signOut } from "next-auth/react";
-import { useState } from "react";
+import { signOut } from 'next-auth/react';
+import { useState } from 'react';
 
-import layoutStyles from "./layout.module.css";
+import layoutStyles from './layout.module.css';
 
 export default function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,22 +13,22 @@ export default function LogoutButton() {
 
     setIsLoading(true);
 
-    const resp = await fetch("/api/signout", {
-      method: "POST",
+    const resp = await fetch('/api/signout', {
+      method: 'POST',
     });
 
-    const callbackUrl = resp.status === 204 ? "/logout_confirm" : "/500";
+    const callbackUrl = resp.status === 204 ? '/logout_confirm' : '/500';
 
     await signOut({ callbackUrl });
   };
 
   return (
-    <form method="POST" action="/api/signout" onSubmit={onLogoutSubmit}>
+    <form method='POST' action='/api/signout' onSubmit={onLogoutSubmit}>
       <input
-        type="submit"
+        type='submit'
         className={`nhsuk-button nhsuk-button--reverse ${layoutStyles.logoutButton}`}
-        data-module="nhsuk-button"
-        value="Logout"
+        data-module='nhsuk-button'
+        value='Logout'
         disabled={isLoading}
       />
     </form>

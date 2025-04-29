@@ -1,10 +1,11 @@
-import { cookies } from "next/headers";
-import { INDUCTION_COOKIE_NAME, INDUCTION_COOKIE_EXPIRY } from "./consts";
-import { getServerSessionErrorIfMissingProperties } from "app/shared/common";
-import { getLogger } from "helpers/logging/logger";
-import crypto from "crypto";
+import { getServerSessionErrorIfMissingProperties } from 'app/shared/common';
+import crypto from 'crypto';
+import { getLogger } from 'helpers/logging/logger';
+import { cookies } from 'next/headers';
 
-const rootLogger = getLogger("addUserLayout");
+import { INDUCTION_COOKIE_EXPIRY, INDUCTION_COOKIE_NAME } from './consts';
+
+const rootLogger = getLogger('addUserLayout');
 
 interface RawInductionCookie {
   answers?: { [index: string]: number[] };
@@ -25,7 +26,7 @@ export default async function parseInductionCookie(): Promise<{
 }> {
   if (!cookies().has(INDUCTION_COOKIE_NAME)) return EMPTY_INDUCTION_COOKIE;
 
-  const existing_cookie = cookies().get(INDUCTION_COOKIE_NAME)?.value || "{}";
+  const existing_cookie = cookies().get(INDUCTION_COOKIE_NAME)?.value || '{}';
   const parsed_cookie: RawInductionCookie = JSON.parse(existing_cookie);
 
   const session = await getServerSessionErrorIfMissingProperties(rootLogger);
@@ -33,7 +34,7 @@ export default async function parseInductionCookie(): Promise<{
   const hash = stringToHash(logged_in_user_email);
 
   if (!(parsed_cookie.user == hash)) {
-    rootLogger.info("Hash of logged in user not found in existing cookie");
+    rootLogger.info('Hash of logged in user not found in existing cookie');
     return EMPTY_INDUCTION_COOKIE;
   }
 
@@ -42,7 +43,7 @@ export default async function parseInductionCookie(): Promise<{
     cookie_wrong: parsed_cookie.wrong || [],
   };
 
-  if (parsed_cookie.passed) cookie["cookie_passed"] = parsed_cookie.passed;
+  if (parsed_cookie.passed) cookie['cookie_passed'] = parsed_cookie.passed;
 
   return cookie;
 }
@@ -50,7 +51,7 @@ export default async function parseInductionCookie(): Promise<{
 export async function setInductionCookie(
   answers: { [index: string]: number[] },
   wrong: number[],
-  passed?: boolean
+  passed?: boolean,
 ) {
   const session = await getServerSessionErrorIfMissingProperties(rootLogger);
   const logged_in_user_email = session.user.email;
@@ -63,7 +64,7 @@ export async function setInductionCookie(
     user: hash,
   };
 
-  if (passed) cookie["passed"] = passed;
+  if (passed) cookie['passed'] = passed;
 
   cookies().set(INDUCTION_COOKIE_NAME, JSON.stringify(cookie), {
     expires: Date.now() + INDUCTION_COOKIE_EXPIRY,
@@ -71,9 +72,9 @@ export async function setInductionCookie(
 }
 
 export function stringToHash(input: string) {
-  const hash = crypto.createHash("sha256");
+  const hash = crypto.createHash('sha256');
   hash.update(input);
 
-  const digest = hash.digest("hex");
+  const digest = hash.digest('hex');
   return digest;
 }

@@ -1,26 +1,22 @@
-import styles from "./user-details.module.css";
-import Link from "next/link";
-import { StatusTag } from "app/shared/statusTags";
+import { User } from 'app/services/getUsersInAgreement';
 import {
-  getFormattedTimestamp,
-  getFormattedRole,
   getFormattedFleetType,
+  getFormattedRole,
+  getFormattedTimestamp,
   NO_TIMESTAMP_TEXT,
-} from "app/shared/common";
-import { getLogger } from "helpers/logging/logger";
-import { User } from "app/services/getUsersInAgreement";
+} from 'app/shared/common';
+import { StatusTag } from 'app/shared/statusTags';
+import Link from 'next/link';
 
-const logger = getLogger("userDetailsPage");
+import styles from './user-details.module.css';
 
 interface UserDescriptionListProps {
   agreement_id: string;
-  user: string;
   user_details: User;
 }
 
 export default async function UserDescriptionList({
   agreement_id,
-  user,
   user_details,
 }: UserDescriptionListProps) {
   const user_is_active =
@@ -32,11 +28,11 @@ export default async function UserDescriptionList({
 
   return (
     <dl
-      className={"nhsuk-summary-list " + styles.summary_list}
-      key={"user_details"}
+      className={'nhsuk-summary-list ' + styles.summary_list}
+      key={'user_details'}
     >
       <SummaryRow
-        item_key="Status"
+        item_key='Status'
         item_value={<StatusTag status={user_details.calculated_status} />}
         item_action={
           <ChangeActivationStatusLink
@@ -45,16 +41,16 @@ export default async function UserDescriptionList({
             user={user_details.email}
           />
         }
-        key="status"
-        data_cy="status"
+        key='status'
+        data_cy='status'
       />
       <SummaryRow
-        item_key="Email address"
+        item_key='Email address'
         item_value={user_details.email}
-        data_cy="email"
+        data_cy='email'
       />
       <SummaryRow
-        item_key="Role"
+        item_key='Role'
         item_value={getFormattedRole(user_details.application_roles_agreement)}
         item_action={
           user_is_active ? (
@@ -64,68 +60,67 @@ export default async function UserDescriptionList({
             />
           ) : null
         }
-        key="role"
-        data_cy="role"
+        key='role'
+        data_cy='role'
       />
-      {user_details.application_roles_agreement?.includes("Analyst") && (
+      {user_details.application_roles_agreement?.includes('Analyst') && (
         <SummaryRow
-          item_key="VDI memory size"
+          item_key='VDI memory size'
           item_value={getFormattedFleetType(user_details.fleet_type)}
-          key="vdi_memory_size"
-          data_cy="vdi_memory_size"
+          key='vdi_memory_size'
+          data_cy='vdi_memory_size'
         />
       )}
       <SummaryRow
-        item_key="Added to agreement"
+        item_key='Added to agreement'
         item_value={getFormattedTimestamp(user_added_to_dsa)}
-        key="added_to_dsa"
-        data_cy="added_to_dsa"
+        key='added_to_dsa'
+        data_cy='added_to_dsa'
       />
-      {/* // TODO: add this row in when the induction flow is added */}
-      {user_details.application_roles_agreement?.includes("Analyst") &&
+      {user_details.application_roles_agreement?.includes('Analyst') &&
         user_details.induction.passed && (
           <SummaryRow
-            data_cy="induction_passed"
-            item_key="Induction assessment passed"
+            data_cy='induction_passed'
+            item_key='Induction assessment passed'
             item_value={getFormattedTimestamp(
-              user_details.induction.passed_timestamp
+              user_details.induction.passed_timestamp,
             )}
-            key="induction_assessment_passed"
+            key='induction_assessment_passed'
           />
         )}
-      {user_details.calculated_status == "Activated" &&
+      {user_details.calculated_status == 'Activated' &&
         user_details.reactivated_timestamp_agreement && (
           <SummaryRow
-            item_key="Reactivated"
+            item_key='Reactivated'
             item_value={getFormattedTimestamp(
-              user_details.reactivated_timestamp_agreement
+              user_details.reactivated_timestamp_agreement,
             )}
-            key="reactivated"
-            data_cy="reactivated"
+            key='reactivated'
+            data_cy='reactivated'
           />
         )}
-      {user_details.calculated_status == "Deactivated" &&
+      {user_details.calculated_status == 'Deactivated' &&
         user_details.disabled_timestamp_agreement && (
           <SummaryRow
-            item_key="Deactivated"
+            item_key='Deactivated'
             item_value={getFormattedTimestamp(
-              user_details.disabled_timestamp_agreement
+              user_details.disabled_timestamp_agreement,
             )}
-            key="deactivated"
-            data_cy="deactivated"
+            key='deactivated'
+            data_cy='deactivated'
           />
         )}
-      {user_details.application_roles_agreement?.includes("Analyst") && (
+      {user_details.application_roles_agreement?.includes('Analyst') && (
         <SummaryRow
-          item_key="Last logged in"
+          item_key='Last logged in'
           item_value={getFormattedTimestamp(user_details.last_login)}
           item_value_hidden_text={
             getFormattedTimestamp(user_details.last_login) == NO_TIMESTAMP_TEXT
-              ? "Never logged in"
+              ? 'Never logged in'
               : undefined
           }
-          key="last_logged_in"
-          data_cy="last_logged_in"
+          key='last_logged_in'
+          data_cy='last_logged_in'
         />
       )}
     </dl>
@@ -134,9 +129,11 @@ export default async function UserDescriptionList({
 
 interface SummaryRowProps {
   item_key: string;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   item_value?: any;
   item_value_hidden_text?: string | undefined;
   item_action?: any;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   data_cy: string;
 }
 
@@ -148,7 +145,7 @@ function SummaryRow({
   data_cy,
 }: SummaryRowProps) {
   return (
-    <div className="nhsuk-summary-list__row">
+    <div className='nhsuk-summary-list__row'>
       <dt className={`nhsuk-summary-list__key ` + styles.summary_list_key}>
         {item_key}
       </dt>
@@ -157,7 +154,7 @@ function SummaryRow({
         data-cy={data_cy}
       >
         {item_value_hidden_text && (
-          <span className="nhsuk-u-visually-hidden">
+          <span className='nhsuk-u-visually-hidden'>
             {item_value_hidden_text}
           </span>
         )}
@@ -178,9 +175,9 @@ function ChangeActivationStatusLink({
   user: string;
 }) {
   const link_contents =
-    status === "Activated" || status === "Pending Induction"
-      ? "Deactivate user"
-      : "Reactivate user";
+    status === 'Activated' || status === 'Pending Induction'
+      ? 'Deactivate user'
+      : 'Reactivate user';
 
   return (
     <Link
@@ -200,7 +197,7 @@ function ChangeRoleLink({
 }) {
   return (
     <Link
-      data-cy="change-role-link"
+      data-cy='change-role-link'
       href={`/agreement/${agreement_id}/manage-users/user/${user}/change-role`}
     >
       Change role

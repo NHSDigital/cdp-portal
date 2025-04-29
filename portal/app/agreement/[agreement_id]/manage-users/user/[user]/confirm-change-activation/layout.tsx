@@ -1,11 +1,12 @@
-import React from "react";
-import hasPermissions from "app/services/hasPermissions";
-import Page403 from "app/403";
-import { getServerSessionErrorIfMissingProperties } from "app/shared/common";
-import { getLogger } from "helpers/logging/logger";
-import { CHANGE_ACTIVATION_PERMISSIONS_REQUIRED } from "../../../consts";
+import Page403 from 'app/403';
+import hasPermissions from 'app/services/hasPermissions';
+import { getServerSessionErrorIfMissingProperties } from 'app/shared/common';
+import { getLogger } from 'helpers/logging/logger';
+import React from 'react';
 
-const rootLogger = getLogger("confirmChangeActivationLayout");
+import { CHANGE_ACTIVATION_PERMISSIONS_REQUIRED } from '../../../consts';
+
+const rootLogger = getLogger('confirmChangeActivationLayout');
 
 interface ConfirmChangeActivationLayout {
   children: React.ReactNode;
@@ -21,8 +22,8 @@ export default async function ConfirmChangeActivationLayout({
 
   const session = await getServerSessionErrorIfMissingProperties(rootLogger);
   const user_email = session.user.email;
-  let userHasPermission;
-  userHasPermission = await hasPermissions({
+
+  const userHasPermission = await hasPermissions({
     permissions_required: CHANGE_ACTIVATION_PERMISSIONS_REQUIRED,
     agreement_id: agreement_id,
     user_email: user_email,

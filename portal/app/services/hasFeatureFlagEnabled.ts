@@ -1,5 +1,6 @@
-import hasFeatureFlagEnabledGivenCookies from "./hasFeatureFlagEnabledGivenCookies";
-import { cookies } from "next/headers";
+import { cookies } from 'next/headers';
+
+import hasFeatureFlagEnabledGivenCookies from './hasFeatureFlagEnabledGivenCookies';
 
 export default async function hasFeatureFlagEnabled({
   featureFlagName,
@@ -7,7 +8,7 @@ export default async function hasFeatureFlagEnabled({
   featureFlagName: string;
 }): Promise<boolean> {
   const featureFlagCookie = cookies().get(`FEATURE-FLAG-${featureFlagName}`);
-  const ff_cookie_enabled = featureFlagCookie?.value === "true";
+  const ff_cookie_enabled = featureFlagCookie?.value === 'true';
 
   return hasFeatureFlagEnabledGivenCookies({
     featureFlagName,

@@ -1,30 +1,41 @@
-"use client";
+'use client';
 
-import React from "react";
-import TextInputField from "app/shared/textInputField";
-import SubmitButton from "app/shared/submitButton";
-import { invokeSetUpPassword, invokeSetUpPasswordType } from "./serverActions";
-import { useFormState } from "react-dom";
-import ErrorSummary from "app/shared/errorSummary";
+import ErrorSummary from 'app/shared/errorSummary';
+import SubmitButton from 'app/shared/submitButton';
+import TextInputField from 'app/shared/textInputField';
+import React, { useEffect } from 'react';
+import { useFormState } from 'react-dom';
+
+import { invokeSetUpPassword, invokeSetUpPasswordType } from './serverActions';
 
 const initialFormState: invokeSetUpPasswordType = {};
 
-export default function SetUpPasswordContent() {
+export default function SetUpPasswordContent({
+  user_email,
+  guid,
+}: {
+  user_email: string;
+  guid: string;
+}) {
   const [formState, formAction] = useFormState(
     invokeSetUpPassword,
-    initialFormState
+    initialFormState,
   );
+
+  useEffect(() => {
+    document.getElementById('error-summary')?.focus();
+  }, [formState.errors]);
 
   return (
     <>
       <ErrorSummary
         errors={[
           {
-            input_id: "enter_password-input",
+            input_id: 'enter_password-input',
             errors_list: formState.errors?.enter_password,
           },
           {
-            input_id: "confirm_password-input",
+            input_id: 'confirm_password-input',
             errors_list: formState.errors?.confirm_password,
           },
         ]}
@@ -45,17 +56,19 @@ export default function SetUpPasswordContent() {
       </ul>
       <form action={formAction}>
         <TextInputField
-          label="Enter password"
-          name="enter_password"
+          label='Enter password'
+          name='enter_password'
           errors={formState.errors?.enter_password}
           isPassword={true}
         />
         <TextInputField
-          label="Confirm password"
-          name="confirm_password"
+          label='Confirm password'
+          name='confirm_password'
           errors={formState.errors?.confirm_password}
           isPassword={true}
         />
+        <input type='hidden' name='user_email' value={user_email} />
+        <input type='hidden' name='guid' value={guid} />
         <SubmitButton>Continue</SubmitButton>
       </form>
     </>

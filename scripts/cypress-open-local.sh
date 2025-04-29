@@ -1,4 +1,4 @@
-# /bin/bash
+#!/bin/bash
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 . "$SCRIPT_DIR/variables.sh"
 set -eu

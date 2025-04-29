@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import useHasJavascript from "app/shared/useHasJavascript";
-import Link from "next/link";
+import useHasJavascript from 'app/shared/useHasJavascript';
+import Link from 'next/link';
 
 interface AddAnotherUserProps {
   form_id: string;

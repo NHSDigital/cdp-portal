@@ -1,17 +1,21 @@
-"use client";
+'use client';
 
-import { UserToAdd } from "./types";
-import useUserListFromSessionStorage from "./useUserListFromSessionStorage";
-import ConfirmView from "./confirmView";
-import useSubmitUsers from "./useSubmitUsers";
-import LoadingView from "./loadingView";
-import { useEffect } from "react";
+import { useEffect } from 'react';
+
+import ConfirmView from './confirmView';
+import LoadingView from './loadingView';
+import { UserToAdd } from './types';
+import useSubmitUsers from './useSubmitUsers';
+import useUserListFromSessionStorage from './useUserListFromSessionStorage';
 
 interface ConfirmClientProps {
   latest_user_to_add: UserToAdd;
   form_id: string;
   agreement_id: string;
-  createOneUserNoJS: (previous_state: any, form_data: FormData) => void;
+  createOneUserNoJS: (
+    previous_state: Record<string, unknown>,
+    form_data: FormData,
+  ) => void;
 }
 
 export default function ConfirmClient({

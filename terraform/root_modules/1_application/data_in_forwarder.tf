@@ -1,6 +1,6 @@
 locals {
   access_import_data_pending_bucket_arn = "arn:aws:s3:::${local.access_import_data_pending_bucket_name}"
-  source_email_address                  = "noreply@${local.portal_full_domain_name}"
+  source_email_address                  = local.dev_envs ? "noreply@portal.${local.portal_hosted_zone_name}" : "noreply@${local.portal_full_domain_name}"
   access_s3_kms_key_arn                 = "arn:aws:kms:eu-west-2:${var.dare_access_account_id}:key/${var.access_s3_kms_key_id}"
 }
 

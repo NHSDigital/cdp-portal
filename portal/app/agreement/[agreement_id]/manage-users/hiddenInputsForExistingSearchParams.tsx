@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from 'next/navigation';
 
 /*
  * The hidden inputs mean that when you submit a form, you don't lose the filters that were already there
@@ -21,6 +21,6 @@ export default function HiddenInputsForExistingSearchParams({
   return Array.from(searchParams)
     .filter(([key]) => key !== exclude)
     .map(([key, value], i) => (
-      <input type="hidden" key={i} name={key} value={value} />
+      <input type='hidden' key={i} name={key} value={value} />
     ));
 }

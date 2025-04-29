@@ -1,12 +1,13 @@
-import React from "react";
-import hasFeatureFlagEnabled from "../../../services/hasFeatureFlagEnabled";
-import hasPermissions from "../../../services/hasPermissions";
-import { notFound } from "next/navigation";
-import Page403 from "../../../403";
-import { USER_MANAGEMENT_FEATURE_FLAG } from "./consts";
-import { getServerSession } from "next-auth";
+import { notFound } from 'next/navigation';
+import { getServerSession } from 'next-auth';
+import React from 'react';
 
-const PERMISSIONS_REQUIRED = ["user_management.get_agreement_users"];
+import Page403 from '../../../403';
+import hasFeatureFlagEnabled from '../../../services/hasFeatureFlagEnabled';
+import hasPermissions from '../../../services/hasPermissions';
+import { USER_MANAGEMENT_FEATURE_FLAG } from './consts';
+
+const PERMISSIONS_REQUIRED = ['user_management.get_agreement_users'];
 
 interface ManageUsersLayoutProps {
   children: React.ReactNode;

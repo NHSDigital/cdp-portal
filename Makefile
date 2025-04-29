@@ -20,7 +20,7 @@ guard-%:
 # Linting
 
 .PHONY: fmt
-fmt: tf-fmt python-fmt prettier-fmt ## Format all autoformattable code
+fmt: tf-fmt python-fmt prettier-fmt eslint-fix ## Format all autoformattable code
 	@echo "Nice and tidy!"
 
 .PHONY: python-lint-all
@@ -55,12 +55,16 @@ prettier-fmt: npm-install ## Format typescript/css/json/tsx files
 	cd portal; npx prettier --write .
 
 .PHONY: prettier-validate-all
-prettier-validate-all: npm-install ## Check typescript/css/json/tsx format (For use in CI, locally just use ts-fmt) # TODO: Import npm
+prettier-validate-all: npm-install ## Check typescript/css/json/tsx format
 	cd portal; npx prettier --check .
 
 .PHONY: eslint-validate-all
-eslint-validate-all: npm-install ## Raises code warnings for typescript/css/json/tsx files
+eslint-validate-all: npm-install ## Raises code warnings for typescript/css/json/tsx files. Also enforces Prettier rules.
 	cd portal; npm run lint -- . --max-warnings 0
+
+.PHONY: eslint-fix
+eslint-fix: npm-install ## Raises code warnings for typescript/css/json/tsx files. Also enforces Prettier rules.
+	cd portal; npm run lint:fix . --max-warnings 0
 
 # Terraform
 .PHONY: init
@@ -206,3 +210,11 @@ trivy-all: guard-BUILD_ENV ## Run security Analysis on all root modules
 		echo "exit code is $$exit_code"; \
 	done ; \
 	exit $$exit_code
+
+.PHONY: trivy-vulnlow
+trivy-vulnlow: guard-MODULE guard-BUILD_ENV ## Run trivy vulnerability analysis
+	cd portal && trivy fs --scanners vuln . --severity UNKNOWN,LOW,MEDIUM --ignorefile ../terraform/.trivyignore --exit-code 1
+
+.PHONY: trivy-vulnhigh
+trivy-vulnhigh: guard-MODULE guard-BUILD_ENV ## Run trivy vulnerability analysis
+	cd portal && trivy fs --scanners vuln . --severity HIGH,CRITICAL --ignorefile ../terraform/.trivyignore --exit-code 1

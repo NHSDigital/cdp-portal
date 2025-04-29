@@ -63,7 +63,7 @@ resource "aws_s3_bucket_ownership_controls" "log_delivery" {
 }
 
 module "audit_logs_to_cloudwatch" {
-  source = "../../../submodules/s3_to_cloudwatch_lambda/terraform"
+  source = "../../../submodules/s3_to_cloudwatch_lambda_with_log_group/terraform"
 
   trigger_type           = "EVENT"
   resource_name_prefix   = "portal-audit-logs"

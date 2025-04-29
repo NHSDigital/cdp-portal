@@ -1,5 +1,5 @@
-import NotificationBanner from "../../components/NotificationsBanner";
-import getNotifications from "../../services/getNotifications";
+import NotificationBanner from '../../components/NotificationsBanner';
+import getNotifications from '../../services/getNotifications';
 
 export default async function Notifications() {
   const notificationItems = await getNotifications();

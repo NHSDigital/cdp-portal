@@ -1,7 +1,8 @@
-import React from "react";
-import hasFeatureFlagEnabled from "app/services/hasFeatureFlagEnabled";
-import { notFound } from "next/navigation";
-import { INDUCTION_FEATURE_FLAG } from "./consts";
+import hasFeatureFlagEnabled from 'app/services/hasFeatureFlagEnabled';
+import { notFound } from 'next/navigation';
+import React from 'react';
+
+import { INDUCTION_FEATURE_FLAG } from './consts';
 
 interface InductionLayoutProps {
   children: React.ReactNode;

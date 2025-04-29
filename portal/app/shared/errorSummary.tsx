@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 interface Errors {
   input_id: string;
@@ -10,18 +10,18 @@ interface ErrorSummaryProps {
 
 export default function ErrorSummary({ errors }: ErrorSummaryProps) {
   const filtered_errors = errors.filter(
-    (error) => error.errors_list !== undefined
+    (error) => error.errors_list !== undefined,
   );
 
   useEffect(() => {
     if (filtered_errors.length === 0) {
-      if (document.title.startsWith("Error:")) {
-        document.title = document.title.slice("Error:".length);
+      if (document.title.startsWith('Error:')) {
+        document.title = document.title.slice('Error:'.length);
       }
       return;
     } else {
-      if (!document.title.startsWith("Error:")) {
-        document.title = "Error: " + document.title;
+      if (!document.title.startsWith('Error:')) {
+        document.title = 'Error: ' + document.title;
       }
     }
   });
@@ -38,7 +38,7 @@ export default function ErrorSummary({ errors }: ErrorSummaryProps) {
     return errors_list?.map((error) => {
       return (
         <li key={input_id + error}>
-          <a href={"#" + input_id.replaceAll(" ", "-")}>{error}</a>
+          <a href={'#' + input_id.replaceAll(' ', '-')}>{error}</a>
         </li>
       );
     });
@@ -46,20 +46,20 @@ export default function ErrorSummary({ errors }: ErrorSummaryProps) {
 
   return (
     <div
-      className="nhsuk-error-summary"
-      id="error-summary"
-      aria-labelledby="error-summary-title"
-      role="alert"
+      className='nhsuk-error-summary'
+      id='error-summary'
+      aria-labelledby='error-summary-title'
+      role='alert'
       tabIndex={-1}
     >
-      <h2 className="nhsuk-error-summary__title" id="error-summary-title">
+      <h2 className='nhsuk-error-summary__title' id='error-summary-title'>
         There is a problem
       </h2>
-      <div className="nhsuk-error-summary__body">
+      <div className='nhsuk-error-summary__body'>
         <ul
-          className="nhsuk-list nhsuk-error-summary__list"
-          role="list"
-          id="error-summary"
+          className='nhsuk-list nhsuk-error-summary__list'
+          role='list'
+          id='error-summary'
         >
           {errors_to_display}
         </ul>

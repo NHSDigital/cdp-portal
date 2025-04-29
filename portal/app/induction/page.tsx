@@ -1,16 +1,17 @@
-import Link from "next/link";
-import { QUESTIONS_ARRAY } from "./question/[question_number]/consts";
-import { Metadata } from "next";
-import parseInductionCookie from "./inductionCookie";
-import getUserAgreements from "services/getUserAgreements";
-import { redirect } from "next/navigation";
-import { getServerSessionErrorIfMissingProperties } from "app/shared/common";
-import { getLogger } from "helpers/logging/logger";
+import { getServerSessionErrorIfMissingProperties } from 'app/shared/common';
+import { getLogger } from 'helpers/logging/logger';
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import getUserAgreements from 'services/getUserAgreements';
 
-const logger = getLogger("inductionPage");
+import parseInductionCookie from './inductionCookie';
+import { QUESTIONS_ARRAY } from './question/[question_number]/consts';
+
+const logger = getLogger('inductionPage');
 
 export const metadata: Metadata = {
-  title: "Complete the induction assessment",
+  title: 'Complete the induction assessment',
 };
 
 export default async function InductionPage() {
@@ -18,7 +19,7 @@ export default async function InductionPage() {
 
   const session = await getServerSessionErrorIfMissingProperties(logger);
   const results = await getUserAgreements(session.user.email);
-  if (!results.inductionNeeded || results.inductionPassed) redirect("/");
+  if (!results.inductionNeeded || results.inductionPassed) redirect('/');
 
   return (
     <>
@@ -30,10 +31,10 @@ export default async function InductionPage() {
       <p>Before you start:</p>
       <ul>
         <li>
-          make sure you have read the{" "}
+          make sure you have read the{' '}
           <a
-            href="https://digital.nhs.uk/services/secure-data-environment-service/introduction"
-            target="_blank"
+            href='https://digital.nhs.uk/services/secure-data-environment-service/introduction'
+            target='_blank'
           >
             Introduction to the Secure Data Environment (opens in a new window)
           </a>
@@ -55,7 +56,7 @@ export default async function InductionPage() {
       </p>
       <Link
         href={`/induction/question/${link_question_number}`}
-        className="nhsuk-button"
+        className='nhsuk-button'
       >
         Continue
       </Link>

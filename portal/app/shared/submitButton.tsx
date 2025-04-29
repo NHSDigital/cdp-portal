@@ -1,5 +1,5 @@
-import React from "react";
-import { useFormStatus } from "react-dom";
+import React from 'react';
+import { useFormStatus } from 'react-dom';
 
 export default function SubmitButton({
   children,
@@ -9,7 +9,7 @@ export default function SubmitButton({
   // Disable the submit button when the form is pending
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="nhsuk-button" disabled={pending}>
+    <button type='submit' className='nhsuk-button' disabled={pending}>
       {children}
     </button>
   );

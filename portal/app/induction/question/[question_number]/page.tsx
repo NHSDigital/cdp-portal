@@ -1,7 +1,8 @@
-import QuestionClient from "./questionClient";
-import submitQuestionAnswer from "./serverActions";
-import { redirect } from "next/navigation";
-import parseInductionCookie from "app/induction/inductionCookie";
+import parseInductionCookie from 'app/induction/inductionCookie';
+import { redirect } from 'next/navigation';
+
+import QuestionClient from './questionClient';
+import submitQuestionAnswer from './serverActions';
 
 interface QuestionPageProps {
   params: { question_number: string };
@@ -35,13 +36,13 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
 
 function getBackLinkPath(
   current_question_number: number,
-  cookie_wrong: number[]
+  cookie_wrong: number[],
 ) {
   if (current_question_number === 1) return undefined;
 
   if (cookie_wrong.length > 0) {
     const current_question_index_in_wrong = cookie_wrong.indexOf(
-      current_question_number
+      current_question_number,
     );
 
     return current_question_index_in_wrong === 0
@@ -57,13 +58,13 @@ function getBackLinkPath(
 function goToFirstUnansweredQuestion(
   current_question: number,
   answers: { [index: string]: number[] },
-  wrong: number[]
+  wrong: number[],
 ) {
-  let questions = wrong.length
+  const questions = wrong.length
     ? wrong
     : Array.from(Array(10).keys()).map((i) => i + 1);
 
-  for (let i of questions) {
+  for (const i of questions) {
     if (i == current_question) return;
 
     if (!answers[i.toString()]) {

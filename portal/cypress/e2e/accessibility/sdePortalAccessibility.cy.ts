@@ -1,7 +1,9 @@
-import { QA01_ID } from "../utils";
-import "cypress-axe";
+import 'cypress-axe';
+
+import { QA01_ID } from '../utils';
 
 // Every E2E test file needs this, or else retries pass when they should fail
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 beforeEach(() => {});
 
 // Important Note :
@@ -13,45 +15,45 @@ beforeEach(() => {});
 // To avoid this, we can check only the main content of the page, by passing the main content ref to the checkA11y function
 // we can check the header and footer separately in other tests if needed.
 
-describe("Accessibility - SDE Portal pages", () => {
+describe('Accessibility - SDE Portal pages', () => {
   beforeEach(() => {
-    cy.full_login("ANALYST");
+    cy.full_login('ANALYST');
   });
-  it("Header is accessible", () => {
-    cy.visit("/");
+  it('Header is accessible', () => {
+    cy.visit('/');
     cy.injectAxe();
-    cy.checkA11y("header");
+    cy.checkA11y('header');
   });
-  it("Footer is accessible", () => {
-    cy.visit("/");
+  it('Footer is accessible', () => {
+    cy.visit('/');
     cy.injectAxe();
-    cy.checkA11y("footer");
+    cy.checkA11y('footer');
   });
-  it("Agreement selector page is accessible", () => {
-    cy.visit("/");
-    cy.get("title").contains(
-      "Home - Select Agreement - NHS Secure Data Environment"
+  it('Agreement selector page is accessible', () => {
+    cy.visit('/');
+    cy.get('title').contains(
+      'Home - Select Agreement - NHS Secure Data Environment',
     );
     cy.injectAxe();
-    cy.checkA11y("main");
+    cy.checkA11y('main');
   });
-  it("Agreement page is accessible", () => {
+  it('Agreement page is accessible', () => {
     cy.visit(`/agreement/${QA01_ID}`);
-    cy.get("title").contains(`SDE Portal`);
+    cy.get('title').contains(`SDE Portal`);
     cy.injectAxe();
-    cy.checkA11y("main");
+    cy.checkA11y('main');
   });
-  it("Switch agreement page is accessible", () => {
+  it('Switch agreement page is accessible', () => {
     cy.visit(`/agreement/${QA01_ID}/switchagreement`);
-    cy.get("title").contains("Confirm Agreement - SDE");
+    cy.get('title').contains('Confirm Agreement - SDE');
     cy.injectAxe();
-    cy.checkA11y("main");
+    cy.checkA11y('main');
   });
-  it("Fileupload page is accessible", () => {
+  it('Fileupload page is accessible', () => {
     cy.visit(`/agreement/${QA01_ID}/fileupload`);
-    cy.get("title").contains(`Upload file to ${QA01_ID} - SDE`);
+    cy.get('title').contains(`Upload file to ${QA01_ID} - SDE`);
     cy.injectAxe();
-    cy.checkA11y("main");
+    cy.checkA11y('main');
   });
 });
 

@@ -1,10 +1,16 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import BackLink from "./shared/backLink";
-import { getLogger } from "../helpers/logging/logger";
+import { useEffect } from 'react';
 
-const logger = getLogger("Error");
+import {
+  NATIONAL_SERVICE_DESK_EMAIL,
+  NATIONAL_SERVICE_DESK_TELEPHONE,
+} from '@/config/constants';
+
+import { getLogger } from '../helpers/logging/logger';
+import BackLink from './shared/backLink';
+
+const logger = getLogger('Error');
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -21,9 +27,13 @@ export default function Error({ error }: ErrorProps) {
       <p>Try again later.</p>
       <p>
         If you need help using the SDE please raise a service request with our
-        National Service Desk on 0300 303 5035 or email{" "}
-        <a href="mailto:ssd.nationalservicedesk@nhs.net" target="_blank">
-          ssd.nationalservicedesk@nhs.net
+        National Service Desk on {NATIONAL_SERVICE_DESK_TELEPHONE} or email{' '}
+        <a
+          href={`mailto:${NATIONAL_SERVICE_DESK_EMAIL}`}
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          {NATIONAL_SERVICE_DESK_EMAIL}
         </a>
         .
       </p>
@@ -32,7 +42,7 @@ export default function Error({ error }: ErrorProps) {
         to Secure Data Environment and include your NIC number (if known) and
         any relevant screenshots.
       </p>
-      <BackLink href="/" label="Go back to home" />
+      <BackLink href='/' label='Go back to home' />
     </>
   );
 }

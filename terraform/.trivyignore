@@ -1,3 +1,5 @@
+# Exampe of just add CVE ID
+# CVE-2025-27789
 # We accept the risk of ignoring these Trivy concerns
 AVD-AWS-0066
 AVD-DS-0026

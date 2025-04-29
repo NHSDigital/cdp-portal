@@ -1,8 +1,14 @@
-import Head from "next/head";
-import Link from "next/link";
-import { BackLink } from "nhsuk-react-components";
-import { useRef } from "react";
-import BasePage from "../components/BasePage";
+import Head from 'next/head';
+import Link from 'next/link';
+import { BackLink } from 'nhsuk-react-components';
+import { useRef } from 'react';
+
+import {
+  NATIONAL_SERVICE_DESK_EMAIL,
+  NATIONAL_SERVICE_DESK_TELEPHONE,
+} from '@/config/constants';
+
+import BasePage from '../components/BasePage';
 
 const Page500 = () => {
   const mainRef = useRef(null);
@@ -12,14 +18,18 @@ const Page500 = () => {
       <Head>
         <title>Unexpected Error - SDE</title>
       </Head>
-      <main style={{ paddingTop: "4rem", paddingBottom: "4rem" }} ref={mainRef}>
+      <main style={{ paddingTop: '4rem', paddingBottom: '4rem' }} ref={mainRef}>
         <h1>Sorry, there is a problem with the service</h1>
         <p>Try again later.</p>
         <p>
           If you need help using the SDE please raise a service request with our
-          National Service Desk on 0300 303 5035 or email{" "}
-          <a href="mailto:ssd.nationalservicedesk@nhs.net" target="_blank">
-            ssd.nationalservicedesk@nhs.net
+          National Service Desk on {NATIONAL_SERVICE_DESK_TELEPHONE} or email{' '}
+          <a
+            href={`mailto:${NATIONAL_SERVICE_DESK_EMAIL}`}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            {NATIONAL_SERVICE_DESK_EMAIL}
           </a>
           .
         </p>
@@ -28,7 +38,7 @@ const Page500 = () => {
           relates to Secure Data Environment and include your NIC number (if
           known) and any relevant screenshots.
         </p>
-        <BackLink asElement={Link} href="/">
+        <BackLink asElement={Link} href='/'>
           Go back to home
         </BackLink>
       </main>

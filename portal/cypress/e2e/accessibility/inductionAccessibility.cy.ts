@@ -1,14 +1,17 @@
+import 'cypress-axe';
+
+import { INDUCTION_COOKIE_NAME } from 'app/induction/consts';
+
 import {
-  inductionQuestionPageUrl,
   describe_only_if_induction_flag_enabled,
-  inductionPassedPageUrl,
   inductionNotPassedPageUrl,
+  inductionPassedPageUrl,
+  inductionQuestionPageUrl,
   inductionStartPageUrl,
-} from "../utils";
-import { INDUCTION_COOKIE_NAME } from "app/induction/consts";
-import "cypress-axe";
+} from '../utils';
 
 // Every E2E test file needs this, or else retries pass when they should fail
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 beforeEach(() => {});
 
 // Important Note :
@@ -21,39 +24,39 @@ beforeEach(() => {});
 // we can check the header and footer separately in other tests if needed.
 
 describe_only_if_induction_flag_enabled(
-  "Accessibility - Induction pages",
+  'Accessibility - Induction pages',
   () => {
     beforeEach(() => {
-      cy.full_login("ANALYST");
+      cy.full_login('ANALYST');
     });
-    it("Start page is accessible", () => {
+    it('Start page is accessible', () => {
       cy.visit(inductionStartPageUrl());
       cy.injectAxe();
-      cy.checkA11y("main");
+      cy.checkA11y('main');
     });
-    it("Single Answer Question page is accessible", () => {
-      cy.visit(inductionQuestionPageUrl("1"));
+    it('Single Answer Question page is accessible', () => {
+      cy.visit(inductionQuestionPageUrl('1'));
       cy.injectAxe();
-      cy.checkA11y("main");
+      cy.checkA11y('main');
     });
-    it("Multi Answer Question page is accessible", () => {
-      cy.visit(inductionQuestionPageUrl("7"));
+    it('Multi Answer Question page is accessible', () => {
+      cy.visit(inductionQuestionPageUrl('7'));
       cy.injectAxe();
-      cy.checkA11y("main");
+      cy.checkA11y('main');
     });
-    it("Assessment passed is accessible", () => {
+    it('Assessment passed is accessible', () => {
       cy.setCookie(INDUCTION_COOKIE_NAME, JSON.stringify({ passed: true }));
       cy.visit(inductionPassedPageUrl());
       cy.injectAxe();
-      cy.checkA11y("main");
+      cy.checkA11y('main');
     });
-    it("Assessment not passed is accessible", () => {
+    it('Assessment not passed is accessible', () => {
       cy.setCookie(INDUCTION_COOKIE_NAME, JSON.stringify({ wrong: [1, 2] }));
       cy.visit(inductionNotPassedPageUrl());
       cy.injectAxe();
-      cy.checkA11y("main");
+      cy.checkA11y('main');
     });
-  }
+  },
 );
 
 export {};

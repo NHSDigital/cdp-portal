@@ -1,11 +1,12 @@
-import { GetServerSideProps } from "next";
-import Head from "next/head";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { Button, InsetText } from "nhsuk-react-components";
-import { useRef } from "react";
-import BasePage from "../../../components/BasePage";
-import getNotifications, { Notices } from "../../../services/getNotifications";
+import { GetServerSideProps } from 'next';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Button, InsetText } from 'nhsuk-react-components';
+import { useRef } from 'react';
+
+import BasePage from '../../../components/BasePage';
+import getNotifications, { Notices } from '../../../services/getNotifications';
 
 const AgreementPage = ({ notificationItems }: Notices) => {
   const router = useRouter();
@@ -19,11 +20,11 @@ const AgreementPage = ({ notificationItems }: Notices) => {
       <Head>
         <title>Reference Data Uploaded - SDE</title>
       </Head>
-      <main style={{ paddingTop: "4rem", paddingBottom: "4rem" }} ref={mainRef}>
+      <main style={{ paddingTop: '4rem', paddingBottom: '4rem' }} ref={mainRef}>
         <h1>
-          <span className="nhsuk-caption-l">
+          <span className='nhsuk-caption-l'>
             {agreement_id}
-            <span className="nhsuk-u-visually-hidden"> - </span>
+            <span className='nhsuk-u-visually-hidden'> - </span>
           </span>
           Your file is being checked
         </h1>
@@ -39,8 +40,8 @@ const AgreementPage = ({ notificationItems }: Notices) => {
         <InsetText>
           <p>
             In order for your request to be processed, please ensure that you
-            now provide contextual information to{" "}
-            <a href="mailto:england.sde.input-checks@nhs.net" target="_blank">
+            now provide contextual information to{' '}
+            <a href='mailto:england.sde.input-checks@nhs.net' target='_blank'>
               england.sde.input-checks@nhs.net
             </a>
             .
@@ -51,8 +52,8 @@ const AgreementPage = ({ notificationItems }: Notices) => {
           </p>
           <p>
             <a
-              href="https://digital.nhs.uk/services/secure-data-environment-service/secure-data-environment/user-guides/import-reference-data#providing-contextual-information"
-              target="blank"
+              href='https://digital.nhs.uk/services/secure-data-environment-service/secure-data-environment/user-guides/import-reference-data#providing-contextual-information'
+              target='blank'
             >
               Learn more about how to send contextual information (opens in a
               new window).
@@ -81,7 +82,7 @@ const AgreementPage = ({ notificationItems }: Notices) => {
         </Button>
         <p></p>
         {/* @ts-ignore */}
-        <Button secondary={true} as={Link} href="./fileupload">
+        <Button secondary={true} as={Link} href='./fileupload'>
           Upload another file
         </Button>
       </main>

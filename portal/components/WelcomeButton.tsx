@@ -1,7 +1,7 @@
-import { Button } from "nhsuk-react-components";
-import React from "react";
-import { useRouter } from "next/router";
-import { signIn } from "next-auth/react";
+import { useRouter } from 'next/router';
+import { signIn } from 'next-auth/react';
+import { Button } from 'nhsuk-react-components';
+import React from 'react';
 
 export default function WelcomeButton() {
   const {
@@ -11,13 +11,13 @@ export default function WelcomeButton() {
   return (
     <Button
       // @ts-ignore
-      as="input"
-      type="submit"
-      className="welcomeButton"
+      as='input'
+      type='submit'
+      className='welcomeButton'
       onClick={() =>
-        signIn("keycloak", {
+        signIn('keycloak', {
           callbackUrl:
-            (Array.isArray(callbackUrl) ? callbackUrl[0] : callbackUrl) ?? "/",
+            (Array.isArray(callbackUrl) ? callbackUrl[0] : callbackUrl) ?? '/',
         })
       }
     >

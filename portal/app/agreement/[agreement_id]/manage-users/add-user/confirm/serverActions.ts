@@ -1,38 +1,39 @@
-"use server";
+'use server';
 
-import hasFeatureFlagEnabled from "app/services/hasFeatureFlagEnabled";
+import hasFeatureFlagEnabled from 'app/services/hasFeatureFlagEnabled';
+import hasPermissions from 'app/services/hasPermissions';
+import callLambdaWithFullErrorChecking from 'app/shared/callLambda';
+import { logAndError } from 'app/shared/common';
+import { getLoggerAndSession } from 'app/shared/logging';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { Logger } from 'pino';
+
 import {
   ADDING_USER_PERMISSIONS_REQUIRED,
   USER_MANAGEMENT_FEATURE_FLAG,
-} from "../../consts";
-import hasPermissions from "app/services/hasPermissions";
-import { Logger } from "pino";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import callLambdaWithFullErrorChecking from "app/shared/callLambda";
-import { logAndError } from "app/shared/common";
-import { getLoggerAndSession } from "app/shared/logging";
+} from '../../consts';
 
-const LOGGER_NAME = "createUser";
+const LOGGER_NAME = 'createUser';
 
 // Not all agreements have UC Account level group created
 // For such agreements, skip calling the UC Add User Lambda
-const AGREEMENTS_TO_SKIP_DATABRICKS: string[] = ["review_file"];
+const AGREEMENTS_TO_SKIP_DATABRICKS: string[] = ['review_file'];
 
 export async function createOneUserServerActionNoJS(
   agreement_id: string,
-  previous_state: any,
-  form_data: FormData
+  _previous_state: Record<string, unknown>,
+  form_data: FormData,
 ) {
   const { logger } = await getLoggerAndSession(LOGGER_NAME);
-  const user_to_add_email = form_data.get("email") as string;
-  const user_to_add_role = form_data.get("role") as string;
-  const first_name = form_data.get("first_name") as string;
-  const last_name = form_data.get("last_name") as string;
-  const final_confirm = form_data.get("final_confirm");
+  const user_to_add_email = form_data.get('email') as string;
+  const user_to_add_role = form_data.get('role') as string;
+  const first_name = form_data.get('first_name') as string;
+  const last_name = form_data.get('last_name') as string;
+  const final_confirm = form_data.get('final_confirm');
 
   if (!final_confirm) {
-    return { error: "You must confirm that these details are correct" };
+    return { error: 'You must confirm that these details are correct' };
   }
 
   try {
@@ -41,23 +42,23 @@ export async function createOneUserServerActionNoJS(
       user_to_add_email,
       user_to_add_role,
       first_name,
-      last_name
+      last_name,
     );
 
     const cookie_store = cookies();
     cookie_store.set(
-      "manage_users_success_message",
-      `${form_data.get("first_name")} ${form_data.get(
-        "last_name"
+      'manage_users_success_message',
+      `${form_data.get('first_name')} ${form_data.get(
+        'last_name',
       )} added successfully`,
-      { expires: Date.now() + 30 * 1000 }
+      { expires: Date.now() + 30 * 1000 },
     );
-    cookie_store.set("add_user_form", "", { maxAge: 0 }); // expire the add user form cookie
+    cookie_store.set('add_user_form', '', { maxAge: 0 }); // expire the add user form cookie
 
     redirect(`/agreement/${agreement_id}/manage-users`);
   } catch (error) {
     logger.error(error);
-    return { error: "UNEXPECTED_ERROR" };
+    return { error: 'UNEXPECTED_ERROR' };
   }
 }
 
@@ -66,7 +67,7 @@ export async function createOneUserCommon(
   user_to_add_email: string,
   user_to_add_role: string,
   first_name: string,
-  last_name: string
+  last_name: string,
 ) {
   const { logger, session } = await getLoggerAndSession(LOGGER_NAME, {
     user_to_add: {
@@ -76,16 +77,16 @@ export async function createOneUserCommon(
     },
   });
   try {
-    logger.info("Add user requested.");
+    logger.info('Add user requested.');
 
-    logger.info("Starting create user process for one user");
+    logger.info('Starting create user process for one user');
 
     // Check feature flag
     const hasfeatureEnabled = await hasFeatureFlagEnabled({
       featureFlagName: USER_MANAGEMENT_FEATURE_FLAG,
     });
 
-    if (!hasfeatureEnabled) logAndError(logger, "This feature is disabled");
+    if (!hasfeatureEnabled) logAndError(logger, 'This feature is disabled');
 
     // Check user has permission
     const userHasPermission = await hasPermissions({
@@ -98,7 +99,7 @@ export async function createOneUserCommon(
     if (!userHasPermission) {
       logAndError(
         logger,
-        "Requesting user does not have permission to add new users, or email input by user is a data wrangler or support admin"
+        'Requesting user does not have permission to add new users, or email input by user is a data wrangler or support admin',
       );
     }
 
@@ -111,13 +112,13 @@ export async function createOneUserCommon(
       last_name,
       user_to_add_role,
       agreement_id,
-      logger
+      logger,
     );
 
-    logger.info("Add user success.");
+    logger.info('Add user success.');
   } catch (err) {
     logger.error(err);
-    throw new Error("Something went wrong"); // To change for better error handling
+    throw new Error('Something went wrong'); // To change for better error handling
   }
 }
 
@@ -127,7 +128,7 @@ async function createOneUser(
   last_name: string,
   role: string,
   agreement_id: string,
-  logger: Logger
+  logger: Logger,
 ) {
   // Call the lambdas
   await createBaseUser({
@@ -140,10 +141,10 @@ async function createOneUser(
   let role_name: string;
   let fleet_type: string | undefined;
 
-  if (role == "Analyst" || role == "Both") {
+  if (role == 'Analyst' || role == 'Both') {
     role_name =
-      agreement_id == "review_file" ? "BasicAgreementAccess" : "Analyst";
-    fleet_type = agreement_id == "review_file" ? "review_file" : "default";
+      agreement_id == 'review_file' ? 'BasicAgreementAccess' : 'Analyst';
+    fleet_type = agreement_id == 'review_file' ? 'review_file' : 'default';
 
     await addRoleToUserInAgreement({
       user_email: user_to_add_email,
@@ -151,17 +152,17 @@ async function createOneUser(
       role_name,
       fleet_type,
       logger: logger,
-      email_type: role == "Both" ? null : "NEW_USER",
+      email_type: role == 'Both' ? null : 'NEW_USER',
     });
   }
 
-  if (role == "UserManager" || role == "Both") {
+  if (role == 'UserManager' || role == 'Both') {
     await addRoleToUserInAgreement({
       user_email: user_to_add_email,
       agreement_id,
-      role_name: "UserManager",
+      role_name: 'UserManager',
       logger: logger,
-      email_type: "NEW_USER",
+      email_type: 'NEW_USER',
     });
   }
 
@@ -174,7 +175,7 @@ async function createOneUser(
     });
   }
 
-  logger.info("Finished create user process");
+  logger.info('Finished create user process');
 }
 
 interface CreateBaseUser {
@@ -199,7 +200,7 @@ interface AddRoleToUserInAgreement {
   role_name: string;
   fleet_type?: string;
   logger: Logger;
-  email_type: "NEW_USER" | "ROLE_CHANGE" | null;
+  email_type: 'NEW_USER' | 'ROLE_CHANGE' | null;
 }
 
 async function addRoleToUserInAgreement({
@@ -208,7 +209,7 @@ async function addRoleToUserInAgreement({
   ...rest
 }: AddRoleToUserInAgreement) {
   const raw_payload = rest;
-  if (fleet_type) raw_payload["fleet_type"] = fleet_type;
+  if (fleet_type) raw_payload['fleet_type'] = fleet_type;
 
   return await callLambdaWithFullErrorChecking({
     function_name: process.env.ADD_ROLE_TO_USER_IN_AGREEMENT_ARN as string,

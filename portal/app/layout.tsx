@@ -1,20 +1,24 @@
-import "./style.scss";
-import "../styles/NotificationBanner.css";
-import Header from "./layout/header";
-import Footer from "./layout/footer";
-import SessionProviderWrapper from "./layout/sessionProviderWrapper";
-import { getServerSession } from "next-auth";
-import NoScriptWarning from "./layout/noScriptWarning";
-import Notifications from "./layout/notifications";
+import './style.scss';
+import '../styles/NotificationBanner.css';
+
+import { getServerSession } from 'next-auth';
+
+import style from '@/styles/BasePage.module.css';
+
+import Footer from './layout/footer';
+import Header from './layout/header';
+import NoScriptWarning from './layout/noScriptWarning';
+import Notifications from './layout/notifications';
+import SessionProviderWrapper from './layout/sessionProviderWrapper';
 
 export const metadata = {
   title: {
-    template: "%s - SDE",
-    default: "SDE Web Portal",
+    template: '%s - SDE',
+    default: 'SDE Web Portal',
   },
-  description: "NHS Secure Data Environment",
+  description: 'Confirm your email',
   icons: {
-    icon: "/assets/favicons/favicon.png",
+    icon: '/assets/favicons/favicon.png',
   },
 };
 
@@ -26,20 +30,20 @@ export default async function RootLayout({
   const initialSession = await getServerSession();
 
   return (
-    <html lang="en">
+    <html lang='en'>
       <body>
         <SessionProviderWrapper initialSession={initialSession}>
-          <a className="nhsuk-skip-link" href="#maincontent">
+          <a className='nhsuk-skip-link' href='#maincontent'>
             Skip to main content
           </a>
-          <div>
+          <div className={style.fullPageHeight}>
             <Header />
-            <div className="nhsuk-width-container">
+            <div className='nhsuk-width-container'>
               <Notifications />
               <NoScriptWarning />
               <main
-                className="nhsuk-main-wrapper nhsuk-u-padding-top-4"
-                id="maincontent"
+                className='nhsuk-main-wrapper nhsuk-u-padding-top-4'
+                id='maincontent'
               >
                 {children}
               </main>

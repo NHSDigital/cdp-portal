@@ -1,16 +1,17 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { Session, getServerSession } from "next-auth";
-import { authOptions } from "./auth/[...nextauth]";
-import { S3Client, ListObjectsCommand } from "@aws-sdk/client-s3";
-import { getLogger } from "../../helpers/logging/logger";
+import { ListObjectsCommand, S3Client } from '@aws-sdk/client-s3';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { getServerSession, Session } from 'next-auth';
 
-const logger = getLogger("switchAgreement");
+import { getLogger } from '../../helpers/logging/logger';
+import { authOptions } from './auth/[...nextauth]';
 
-const client = new S3Client({ region: "eu-west-2" });
+const logger = getLogger('switchAgreement');
+
+const client = new S3Client({ region: 'eu-west-2' });
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Only POST requests allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Only POST requests allowed' });
   }
 
   try {
@@ -31,13 +32,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (response.Contents) {
       for (const item of response.Contents) {
         if (item.Key === object_key)
-          return res.status(400).json({ message: "File already exists" });
+          return res.status(400).json({ message: 'File already exists' });
       }
     }
-    return res.status(200).json({ message: "File does not exist" });
+    return res.status(200).json({ message: 'File does not exist' });
   } catch (err) {
     logger.error(err);
-    return res.status(500).json({ message: "An unknown error occurred" });
+    return res.status(500).json({ message: 'An unknown error occurred' });
   }
 };
 

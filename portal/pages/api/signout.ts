@@ -1,16 +1,17 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { Session, getServerSession } from "next-auth";
-import { JWT, getToken } from "next-auth/jwt";
-import { getLogger } from "../../helpers/logging/logger";
-import { authOptions, keycloak } from "./auth/[...nextauth]";
+import { NextApiRequest, NextApiResponse } from 'next';
+import { getServerSession, Session } from 'next-auth';
+import { getToken, JWT } from 'next-auth/jwt';
 
-const requestIp = require("request-ip");
+import { getLogger } from '../../helpers/logging/logger';
+import { authOptions, keycloak } from './auth/[...nextauth]';
 
-const logger = getLogger("switchAgreement");
+const requestIp = require('request-ip');
+
+const logger = getLogger('switchAgreement');
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Only POST requests allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Only POST requests allowed' });
   }
 
   try {
@@ -27,30 +28,30 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     };
     const child_logger = logger.child(log_message);
 
-    child_logger.debug("User requested logout");
+    child_logger.debug('User requested logout');
 
     const token = (await getToken({ req })) as JWT; //gitsecrets:ignore
 
-    child_logger.debug("Logging out from keycloak");
+    child_logger.debug('Logging out from keycloak');
 
     const keycloakLogoutResp = await fetch(
       // @ts-ignore
       `${keycloak.options.issuer}/protocol/openid-connect/logout`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${token.accessToken}`,
-          "Content-Type": "application/x-www-form-urlencoded",
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: `client_id=${encodeURIComponent(
           // @ts-ignore
-          keycloak.options.clientId
+          keycloak.options.clientId,
         )}&client_secret=${encodeURIComponent(
           // @ts-ignore
-          keycloak.options.clientSecret
+          keycloak.options.clientSecret,
           // @ts-ignore
         )}&refresh_token=${encodeURIComponent(token.refreshToken)}`,
-      }
+      },
     );
 
     if (keycloakLogoutResp.status !== 204) {
@@ -59,21 +60,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           keycloak_response: await keycloakLogoutResp.text(),
           statusCode: keycloakLogoutResp.status,
         },
-        "Failed to logout in keycloak"
+        'Failed to logout in keycloak',
       );
-      throw new Error("Failed to logout user in Keycloak");
+      throw new Error('Failed to logout user in Keycloak');
     }
 
     // Because next auth js is dumb, you can't logout from the server side
     // We gotta leave it to their endpoint or to the client side
     if (req.body.uses_js) {
-      return res.redirect("/api/auth/signout");
+      return res.redirect('/api/auth/signout');
     } else {
-      return res.status(204).json({ message: "success" });
+      return res.status(204).json({ message: 'success' });
     }
   } catch (err) {
     logger.error(err);
-    return res.status(500).json({ message: "An unknown error occurred" });
+    return res.status(500).json({ message: 'An unknown error occurred' });
   }
 };
 

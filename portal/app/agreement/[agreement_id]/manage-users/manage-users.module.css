@@ -118,7 +118,7 @@
 }
 .checkboxes_small__label:after,
 .checkboxes_small__label:before {
-  content: "";
+  content: '';
   box-sizing: border-box;
   position: absolute;
   background: transparent;
@@ -198,7 +198,9 @@
   .checkboxes_small__item:hover
   .checkboxes_small__input:focus
   + .checkboxes_small__label:before {
-  box-shadow: 0 0 0 3px #ffeb3b, 0 0 0 10px #b1b4b6;
+  box-shadow:
+    0 0 0 3px #ffeb3b,
+    0 0 0 10px #b1b4b6;
 }
 @media (-ms-high-contrast: active), screen and (forced-colors: active) {
   .checkboxes_small__small

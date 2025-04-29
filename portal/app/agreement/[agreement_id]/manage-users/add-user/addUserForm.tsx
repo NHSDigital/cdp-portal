@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import { useFormState } from "react-dom";
-import { useEffect, useState } from "react";
-import ErrorSummary from "app/shared/errorSummary";
-import SubmitButton from "app/shared/submitButton";
-import TextInputField from "../../../../shared/textInputField";
-import RoleSelector from "app/shared/roleSelector";
-import BackLink from "app/shared/backLink";
+import BackLink from 'app/shared/backLink';
+import ErrorSummary from 'app/shared/errorSummary';
+import RoleSelector from 'app/shared/roleSelector';
+import SubmitButton from 'app/shared/submitButton';
+import { useEffect, useState } from 'react';
+import { useFormState } from 'react-dom';
+
+import TextInputField from '../../../../shared/textInputField';
 
 const initialFormState = {
   errors: {},
@@ -14,7 +15,7 @@ const initialFormState = {
 
 interface AddUserFormProps {
   agreement_id: string;
-  addUserAction: any;
+  addUserAction: Record<string, unknown>;
   form_id: string;
   user_id: string;
 }
@@ -27,21 +28,23 @@ export default function AddUserForm({
 }: AddUserFormProps) {
   const [formState, formAction] = useFormState(addUserAction, initialFormState);
   const [backlinkHref, setBacklinkHref] = useState(
-    `/agreement/${agreement_id}/manage-users/`
+    `/agreement/${agreement_id}/manage-users/`,
   );
 
   useEffect(() => {
-    const session_storage_item = sessionStorage.getItem("add_user_form");
+    const session_storage_item = sessionStorage.getItem('add_user_form');
+    /* eslint-disable @typescript-eslint/no-non-null-assertion */
     const users_to_add_dict = session_storage_item
       ? JSON.parse(session_storage_item)
       : undefined;
+    /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
     if (users_to_add_dict?.[agreement_id]?.[form_id] === undefined) {
       return;
     }
     // if form details exist in session storage, update the backlink href to redirect to confirm page
     setBacklinkHref(
-      `/agreement/${agreement_id}/manage-users/add-user/confirm?form_id=${form_id}`
+      `/agreement/${agreement_id}/manage-users/add-user/confirm?form_id=${form_id}`,
     );
 
     if (users_to_add_dict?.[agreement_id]?.[form_id]?.[user_id] === undefined) {
@@ -52,18 +55,18 @@ export default function AddUserForm({
 
     // prefill the form with the user details
     document
-      .getElementById("first_name-input")
-      ?.setAttribute("value", user_details.first_name);
+      .getElementById('first_name-input')
+      ?.setAttribute('value', user_details.first_name);
     document
-      .getElementById("last_name-input")
-      ?.setAttribute("value", user_details.last_name);
+      .getElementById('last_name-input')
+      ?.setAttribute('value', user_details.last_name);
     document
-      .getElementById("email-input")
-      ?.setAttribute("value", user_details.email);
+      .getElementById('email-input')
+      ?.setAttribute('value', user_details.email);
     document
-      .getElementById("email_confirm-input")
-      ?.setAttribute("value", user_details.email);
-    document.getElementById("role-" + user_details.role + "-input")?.click();
+      .getElementById('email_confirm-input')
+      ?.setAttribute('value', user_details.email);
+    document.getElementById('role-' + user_details.role + '-input')?.click();
   }, [user_id, agreement_id, form_id, setBacklinkHref]);
 
   // Deconstruct the errors from the form state
@@ -78,17 +81,17 @@ export default function AddUserForm({
 
   // Create an array of objects to pass to the error summary component
   const errorSummaryInputs = [
-    { input_id: "first_name-input", errors_list: first_name_errors },
-    { input_id: "last_name-input", errors_list: last_name_errors },
-    { input_id: "email-input", errors_list: email_errors },
-    { input_id: "email_confirm-input", errors_list: email_confirm_errors },
-    { input_id: "role-Analyst-input", errors_list: role_errors },
-    { input_id: "confirm-input", errors_list: confirm_errors },
+    { input_id: 'first_name-input', errors_list: first_name_errors },
+    { input_id: 'last_name-input', errors_list: last_name_errors },
+    { input_id: 'email-input', errors_list: email_errors },
+    { input_id: 'email_confirm-input', errors_list: email_confirm_errors },
+    { input_id: 'role-Analyst-input', errors_list: role_errors },
+    { input_id: 'confirm-input', errors_list: confirm_errors },
   ];
 
   // NHS service manual states must move focus to error summary when it appears
   useEffect(() => {
-    document.getElementById("error-summary")?.focus();
+    document.getElementById('error-summary')?.focus();
   }, [formState.errors]);
 
   return (
@@ -100,26 +103,26 @@ export default function AddUserForm({
         We need some details about the user. You can add additional users later.
       </p>
 
-      <form action={formAction} className="nhsuk-u-margin-top-7">
+      <form action={formAction} className='nhsuk-u-margin-top-7'>
         <TextInputField
-          label="First name"
-          name="first_name"
+          label='First name'
+          name='first_name'
           errors={first_name_errors}
         />
         <TextInputField
-          label="Last name"
-          name="last_name"
+          label='Last name'
+          name='last_name'
           errors={last_name_errors}
         />
         <TextInputField
-          label="Email"
-          name="email"
+          label='Email'
+          name='email'
           hint="This must be the user's correct work email, not a personal email address. For example - john.smith1@nhs.net"
           errors={email_errors}
         />
         <TextInputField
-          label="Confirm their email"
-          name="email_confirm"
+          label='Confirm their email'
+          name='email_confirm'
           errors={email_confirm_errors}
         />
 
@@ -127,13 +130,13 @@ export default function AddUserForm({
         <div
           className={
             role_errors
-              ? "nhsuk-form-group nhsuk-form-group--error nhsuk-u-margin-top-7"
-              : "nhsuk-form-group nhsuk-u-margin-top-7"
+              ? 'nhsuk-form-group nhsuk-form-group--error nhsuk-u-margin-top-7'
+              : 'nhsuk-form-group nhsuk-u-margin-top-7'
           }
         >
-          <fieldset className="nhsuk-fieldset">
-            <legend className="nhsuk-fieldset__legend nhsuk-fieldset__legend--s">
-              <strong className="nhsuk-fieldset__heading">Role</strong>
+          <fieldset className='nhsuk-fieldset'>
+            <legend className='nhsuk-fieldset__legend nhsuk-fieldset__legend--s'>
+              <strong className='nhsuk-fieldset__heading'>Role</strong>
             </legend>
             <RoleSelector errors={role_errors} />
           </fieldset>

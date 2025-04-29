@@ -1,9 +1,9 @@
-import NextAuth, { AuthOptions } from "next-auth";
-import KeycloakProvider from "next-auth/providers/keycloak";
+import NextAuth, { AuthOptions } from 'next-auth';
+import KeycloakProvider from 'next-auth/providers/keycloak';
 
 export const keycloak = KeycloakProvider({
-  clientId: process.env.KEYCLOAK_ID ?? "",
-  clientSecret: process.env.KEYCLOAK_SECRET ?? "",
+  clientId: process.env.KEYCLOAK_ID ?? '',
+  clientSecret: process.env.KEYCLOAK_SECRET ?? '',
   issuer: process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER,
 });
 
@@ -15,7 +15,7 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async redirect({ url, baseUrl }) {
       // Redirect to relative URL
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
       // Redirect to non-relative URL on this host
       else if (new URL(url).origin === baseUrl) return url;
       // Redirect to keycloak

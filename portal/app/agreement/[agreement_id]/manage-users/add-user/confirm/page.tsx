@@ -1,11 +1,12 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { Metadata } from "next";
-import ConfirmClient from "./confirmClient";
-import { createOneUserServerActionNoJS } from "./serverActions";
+import { Metadata } from 'next';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+
+import ConfirmClient from './confirmClient';
+import { createOneUserServerActionNoJS } from './serverActions';
 
 export const metadata: Metadata = {
-  title: "Confirm user details",
+  title: 'Confirm user details',
 };
 
 interface ConfirmAddUserPageProps {
@@ -14,7 +15,7 @@ interface ConfirmAddUserPageProps {
 }
 
 function getLatestAddedUserFromCookie(agreement_id: string) {
-  const add_user_form_cookie = cookies().get("add_user_form");
+  const add_user_form_cookie = cookies().get('add_user_form');
   if (!add_user_form_cookie) {
     redirect(`/agreement/${agreement_id}/manage-users/add-user`);
   }
@@ -28,11 +29,11 @@ export default async function AddUserPage({
   searchParams,
 }: ConfirmAddUserPageProps) {
   const latest_added_user_details = getLatestAddedUserFromCookie(
-    params.agreement_id
+    params.agreement_id,
   );
   const form_id = searchParams.form_id;
 
-  if (typeof form_id !== "string") {
+  if (typeof form_id !== 'string') {
     redirect(`/agreement/${params.agreement_id}/manage-users/add-user`);
   }
 
@@ -52,7 +53,7 @@ export default async function AddUserPage({
         agreement_id={params.agreement_id}
         createOneUserNoJS={createOneUserServerActionNoJS.bind(
           null,
-          params.agreement_id
+          params.agreement_id,
         )}
       />
     </>

@@ -1,7 +1,7 @@
-import React from "react";
-import { notFound } from "next/navigation";
-import hasFeatureFlagEnabled from "app/services/hasFeatureFlagEnabled";
-import { FeatureFlags } from "types/enums";
+import hasFeatureFlagEnabled from 'app/services/hasFeatureFlagEnabled';
+import { notFound } from 'next/navigation';
+import React from 'react';
+import { FeatureFlags } from 'types/enums';
 
 interface ManageUsersLayoutProps {
   children: React.ReactNode;
@@ -9,12 +9,12 @@ interface ManageUsersLayoutProps {
 
 export const metadata = {
   title: {
-    template: "%s - SDE",
-    default: "SDE Web Portal",
+    template: '%s - SDE',
+    default: 'SDE Web Portal',
   },
-  description: "NHS Secure Data Environment",
+  description: 'NHS Secure Data Environment',
   icons: {
-    icon: "/assets/favicons/favicon.png",
+    icon: '/assets/favicons/favicon.png',
   },
 };
 

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react';
 
 /**
  * Throws an Error within a components rendering cycle.
@@ -6,13 +6,13 @@ import { useCallback, useState } from "react";
  * React error boundaries will then redirect the user to the error page.
  */
 export const useAsyncError = () => {
-  const [_, setError] = useState();
+  const [, setError] = useState();
   return useCallback(
     (e: unknown) => {
       setError(() => {
         throw e;
       });
     },
-    [setError]
+    [setError],
   );
 };

@@ -1,20 +1,21 @@
-"use server";
+'use server';
 
-import hasFeatureFlagEnabled from "app/services/hasFeatureFlagEnabled";
-import { logAndError } from "app/shared/common";
-import { getLoggerAndSession } from "app/shared/logging";
-import { cookies } from "next/headers";
+import getAgreementUserDetails from 'app/services/getAgreementUserDetails';
+import hasFeatureFlagEnabled from 'app/services/hasFeatureFlagEnabled';
+import hasPermissions from 'app/services/hasPermissions';
+import { callLambdaWithoutFullErrorChecking } from 'app/shared/callLambda';
+import { logAndError } from 'app/shared/common';
+import { getLoggerAndSession } from 'app/shared/logging';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { Logger } from 'pino';
+
 import {
   CHANGE_ACTIVATION_PERMISSIONS_REQUIRED,
   USER_MANAGEMENT_FEATURE_FLAG,
-} from "../../../consts";
-import hasPermissions from "app/services/hasPermissions";
-import { callLambdaWithoutFullErrorChecking } from "app/shared/callLambda";
-import { Logger } from "pino";
-import { redirect } from "next/navigation";
-import getAgreementUserDetails from "app/services/getAgreementUserDetails";
+} from '../../../consts';
 
-const LOGGER_NAME = "changeActivation";
+const LOGGER_NAME = 'changeActivation';
 
 interface ChangeActivation {
   agreement_id: string;
@@ -28,14 +29,14 @@ export default async function changeActivation(
     user_to_change_activation_email,
     new_activation,
   }: ChangeActivation,
-  previous_state: any,
-  form_data: FormData
+  _previous_state: Record<string, unknown>,
+  form_data: FormData,
 ) {
-  if (form_data.get("confirm") === "No") {
+  if (form_data.get('confirm') === 'No') {
     redirect(
       `/agreement/${agreement_id}/manage-users/user/${encodeURIComponent(
-        user_to_change_activation_email
-      )}`
+        user_to_change_activation_email,
+      )}`,
     );
   }
 
@@ -48,25 +49,25 @@ export default async function changeActivation(
   });
 
   try {
-    if (form_data.get("confirm") !== "Yes") {
-      logger.info("User did not select yes on confirm screen");
+    if (form_data.get('confirm') !== 'Yes') {
+      logger.info('User did not select yes on confirm screen');
       return {
         error: `Select yes to ${
-          new_activation ? "reactivate" : "deactivate"
+          new_activation ? 'reactivate' : 'deactivate'
         } this user`,
       };
     }
 
-    logger.info("Change user activation requested.");
+    logger.info('Change user activation requested.');
 
-    logger.info("Starting change user activation process");
+    logger.info('Starting change user activation process');
 
     // Check feature flag
     const hasfeatureEnabled = await hasFeatureFlagEnabled({
       featureFlagName: USER_MANAGEMENT_FEATURE_FLAG,
     });
 
-    if (!hasfeatureEnabled) logAndError(logger, "This feature is disabled");
+    if (!hasfeatureEnabled) logAndError(logger, 'This feature is disabled');
 
     // Check user has permission
     const userHasPermission = await hasPermissions({
@@ -79,7 +80,7 @@ export default async function changeActivation(
     if (!userHasPermission) {
       logAndError(
         logger,
-        "Requesting user does not have permission to change user activation"
+        'Requesting user does not have permission to change user activation',
       );
     }
 
@@ -88,7 +89,7 @@ export default async function changeActivation(
 
     const user_to_change_details = await getAgreementUserDetails(
       agreement_id,
-      user_to_change_activation_email
+      user_to_change_activation_email,
     );
 
     await changeUserActivation({
@@ -98,18 +99,18 @@ export default async function changeActivation(
       new_activation,
     });
 
-    logger.info("Change user activation success.");
+    logger.info('Change user activation success.');
 
     cookies().set(
-      "manage_users_success_message",
+      'manage_users_success_message',
       `${user_to_change_details.first_name} ${
         user_to_change_details.last_name
-      } has been ${new_activation ? "reactivated" : "deactivated"}.`,
-      { expires: Date.now() + 30 * 1000 }
+      } has been ${new_activation ? 'reactivated' : 'deactivated'}.`,
+      { expires: Date.now() + 30 * 1000 },
     );
   } catch (err) {
     logger.error(err);
-    throw new Error("Something went wrong"); // To change for better error handling
+    throw new Error('Something went wrong'); // To change for better error handling
   }
   redirect(`/agreement/${agreement_id}/manage-users`);
 }

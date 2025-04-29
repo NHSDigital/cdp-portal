@@ -78,7 +78,7 @@ pre-commit install
 
    In terminal `cd` into the root of the repo and run the following commands:
 
-   `git submodule add https://github.com/NHSDigital/cdp-tf-module-s3-to-cloudwatch-lambda.git submodules/s3_to_cloudwatch_lambda`
+   `git submodule add https://github.com/NHSDigital/cdp-tf-s3-to-cloudwatch-lambda-with-log-group.git submodules/s3_to_cloudwatch_lambda_with_log_group`
 
    `git submodule add https://github.com/NHSDigital/cdp-tf-module-s3-bucket.git submodules/s3_bucket`
 

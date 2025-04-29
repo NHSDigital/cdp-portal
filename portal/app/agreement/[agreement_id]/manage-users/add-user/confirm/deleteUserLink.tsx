@@ -1,5 +1,5 @@
-import useHasJavascript from "app/shared/useHasJavascript";
-import Link from "next/link";
+import useHasJavascript from 'app/shared/useHasJavascript';
+import Link from 'next/link';
 
 interface DeleteUserLinkProps {
   agreement_id: string;

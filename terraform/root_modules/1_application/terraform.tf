@@ -1,15 +1,7 @@
 provider "aws" {
   region = "eu-west-2"
   default_tags {
-    tags = {
-      repo      = local.repo
-      Service   = "Data Refinery"
-      Component = "Portal"
-      Owner     = "Platform Team"
-      P-Env     = var.environment
-      Role      = local.root_module
-      Workload  = "Platform"
-    }
+    tags = local.default_tags
   }
 }
 

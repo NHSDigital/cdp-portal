@@ -1,9 +1,10 @@
-import { Metadata } from "next";
-import ChangeUserRoleForm from "./changeUserRoleForm";
-import changeUserRole from "./serverActions";
+import { Metadata } from 'next';
+
+import ChangeUserRoleForm from './changeUserRoleForm';
+import changeUserRole from './serverActions';
 
 export const metadata: Metadata = {
-  title: "Change user role",
+  title: 'Change user role',
 };
 
 interface ChangeRolePageProps {
@@ -16,8 +17,8 @@ export default async function ChangeRolePage({ params }: ChangeRolePageProps) {
   const user_email_decoded = decodeURIComponent(user);
 
   return (
-    <div className="nhsuk-grid-row">
-      <div className="nhsuk-grid-column-three-quarters">
+    <div className='nhsuk-grid-row'>
+      <div className='nhsuk-grid-column-three-quarters'>
         <>
           <ChangeUserRoleForm
             changeUserRole={changeUserRole.bind(null, {

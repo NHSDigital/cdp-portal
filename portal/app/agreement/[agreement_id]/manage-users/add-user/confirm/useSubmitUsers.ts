@@ -1,7 +1,8 @@
-import { SyntheticEvent, useState } from "react";
-import { UserToAdd } from "./types";
-import { useRouter } from "next/navigation";
-import { createOneUserCommon } from "./serverActions";
+import { useRouter } from 'next/navigation';
+import { SyntheticEvent, useState } from 'react';
+
+import { createOneUserCommon } from './serverActions';
+import { UserToAdd } from './types';
 
 interface UseSubmissionStatus {
   users_to_display: UserToAdd[];
@@ -24,12 +25,13 @@ export default function useSubmitUsers({
   const router = useRouter();
 
   async function submitUsers(
-    event: SyntheticEvent<HTMLFormElement, SubmitEvent>
+    event: SyntheticEvent<HTMLFormElement, SubmitEvent>,
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const form_data = new FormData(event.target as any);
-    const final_confirm = form_data.get("final_confirm");
+    const final_confirm = form_data.get('final_confirm');
     if (!final_confirm) {
-      setError("You must confirm that these details are correct");
+      setError('You must confirm that these details are correct');
       return;
     }
     setIsSubmitting(true);
@@ -42,7 +44,7 @@ export default function useSubmitUsers({
           user.email,
           user.role,
           user.first_name,
-          user.last_name
+          user.last_name,
         );
         setProgress((currentProgress: Progress) => ({
           ...currentProgress,
@@ -50,21 +52,21 @@ export default function useSubmitUsers({
         }));
       }
     } catch (error) {
-      console.error("Error submitting users: ", error);
-      router.push("/500");
+      console.error('Error submitting users: ', error);
+      router.push('/500');
       return;
     }
 
-    sessionStorage.removeItem("add_user_form");
+    sessionStorage.removeItem('add_user_form');
 
-    document.cookie = "add_user_form=;max-age=0;path=/";
+    document.cookie = 'add_user_form=;max-age=0;path=/';
 
     const success_message =
       users_to_display.length == 1
         ? `${users_to_display[0].first_name} ${users_to_display[0].last_name} added successfully`
         : `${users_to_display.length} users added successfully`;
     document.cookie = `manage_users_success_message=${encodeURIComponent(
-      success_message
+      success_message,
     )}; expires=${new Date(Date.now() + 30 * 1000).toUTCString()}; path=/`;
 
     router.push(`/agreement/${agreement_id}/manage-users`);

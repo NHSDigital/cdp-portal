@@ -4,15 +4,16 @@ import {
   ExecutionStatus,
   SFNClient,
   StartExecutionCommand,
-} from "@aws-sdk/client-sfn";
-import { AssumeRoleCommand, Credentials, STSClient } from "@aws-sdk/client-sts";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { Session, getServerSession } from "next-auth";
-import { getLogger } from "../../helpers/logging/logger";
-import { authOptions } from "./auth/[...nextauth]";
-const requestIp = require("request-ip");
+} from '@aws-sdk/client-sfn';
+import { AssumeRoleCommand, Credentials, STSClient } from '@aws-sdk/client-sts';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { getServerSession, Session } from 'next-auth';
 
-const logger = getLogger("switchAgreement");
+import { getLogger } from '../../helpers/logging/logger';
+import { authOptions } from './auth/[...nextauth]';
+const requestIp = require('request-ip');
+
+const logger = getLogger('switchAgreement');
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -20,7 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const user_id = session.user?.email;
     const user_ip_address = requestIp.getClientIp(req);
-    const { agreement_id } = req.body;
+    const { agreement_id, open_using } = req.body;
 
     const log_message = {
       user_id: user_id,
@@ -29,10 +30,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     };
     const child_logger = logger.child(log_message);
 
-    if (typeof agreement_id !== "string") {
-      return res
-        .status(400)
-        .json({ error: "agreement_id missing from request or is not string" });
+    if (typeof agreement_id !== 'string') {
+      return res.status(400).json({
+        error: 'agreement_id missing from request or is not string',
+      });
     }
     const credentials = await getRoleCredentials();
 
@@ -43,7 +44,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     };
 
     const client = new SFNClient({
-      region: "eu-west-2",
+      region: 'eu-west-2',
       credentials: inputCreds,
     });
 
@@ -65,11 +66,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (executionArn === undefined) {
       child_logger.error({
-        switched_agreement: "false",
+        switched_agreement: 'false',
         message: `User ${user_id} (${user_ip_address}) failed to switch to agreement ${agreement_id}.`,
       });
 
-      throw new Error("Failed to invoke switch agreement process");
+      throw new Error('Failed to invoke switch agreement process');
     }
     child_logger.debug({ sfnExecutionArn: executionArn });
 
@@ -77,22 +78,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const executionResult = await monitorSfnExecution(client, executionArn);
     if (executionResult.success === true) {
       child_logger.info({
-        switched_agreement: "true",
+        switched_agreement: 'true',
         message: `User ${user_id} (${user_ip_address}) switched to agreement ${agreement_id}.`,
+        mode: open_using,
       });
       const { redirect_url } = JSON.parse(executionResult.body);
       const STATUS_CODE_REDIRECT_AND_CHANGE_POST_TO_GET_REQUEST = 303;
-      if (req.body.uses_js === "true") {
+      if (req.body.uses_js === 'true') {
         return res.status(200).json({ redirect_url });
       } else {
         return res.redirect(
           STATUS_CODE_REDIRECT_AND_CHANGE_POST_TO_GET_REQUEST,
-          redirect_url
+          redirect_url,
         );
       }
     } else {
       child_logger.error({
-        switched_agreement: "false",
+        switched_agreement: 'false',
         message: `User ${user_id} (${user_ip_address}) failed to switch to agreement ${agreement_id}.`,
         switchStatusCode: executionResult.statusCode,
         switchBody: executionResult.body,
@@ -101,9 +103,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   } catch (err) {
     logger.error(err);
-    return res
-      .status(500)
-      .json({ error: "An unexpected error occurred. Please try again later." });
+    return res.status(500).json({
+      error: 'An unexpected error occurred. Please try again later.',
+    });
   }
 };
 
@@ -115,7 +117,7 @@ const monitorSfnExecution = async (
   pollConfig: { interval: number; maxAttempts: number } = {
     interval: 1,
     maxAttempts: 300,
-  }
+  },
 ): Promise<ExecutionResult> => {
   const monitorCommand = new DescribeExecutionCommand({
     executionArn: executionArn,
@@ -131,7 +133,7 @@ const monitorSfnExecution = async (
         success: false,
         statusCode: 500,
         body: JSON.stringify({
-          message: "Failed to get sfn execution details",
+          message: 'Failed to get sfn execution details',
           error: e,
         }),
       };
@@ -141,7 +143,7 @@ const monitorSfnExecution = async (
         success: false,
         statusCode: 500,
         body: JSON.stringify({
-          message: "Failed to get sfn execution details",
+          message: 'Failed to get sfn execution details',
         }),
       };
     }
@@ -170,12 +172,12 @@ const monitorSfnExecution = async (
   return {
     success: false,
     statusCode: 500,
-    body: "Process timed out waiting for the sfn execution to finish",
+    body: 'Process timed out waiting for the sfn execution to finish',
   };
 };
 
 const parseExecutionOutput = (
-  executionOutputString: string
+  executionOutputString: string,
 ): ExecutionResult => {
   const executionOutput = JSON.parse(executionOutputString);
   // Check getSwitchLock status
@@ -223,11 +225,11 @@ const sleep = async (seconds: number): Promise<void> => {
 };
 
 const getRoleCredentials = async (): Promise<Credentials> => {
-  const client = new STSClient({ region: "eu-west-2" });
+  const client = new STSClient({ region: 'eu-west-2' });
 
   const command = new AssumeRoleCommand({
     RoleArn: process.env.SWITCH_AGREEMENT_ROLE_ARN,
-    RoleSessionName: "portalSwitchAgreement",
+    RoleSessionName: 'portalSwitchAgreement',
     DurationSeconds: 900,
   });
 

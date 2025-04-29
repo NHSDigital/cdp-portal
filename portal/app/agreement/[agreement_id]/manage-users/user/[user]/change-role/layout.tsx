@@ -1,11 +1,12 @@
-import React from "react";
-import { getServerSessionErrorIfMissingProperties } from "app/shared/common";
-import { getLogger } from "helpers/logging/logger";
-import hasPermissions from "app/services/hasPermissions";
-import Page403 from "app/403";
-import { ADDING_USER_PERMISSIONS_REQUIRED } from "../../../consts";
+import Page403 from 'app/403';
+import hasPermissions from 'app/services/hasPermissions';
+import { getServerSessionErrorIfMissingProperties } from 'app/shared/common';
+import { getLogger } from 'helpers/logging/logger';
+import React from 'react';
 
-const rootLogger = getLogger("changeRoleLayout");
+import { ADDING_USER_PERMISSIONS_REQUIRED } from '../../../consts';
+
+const rootLogger = getLogger('changeRoleLayout');
 
 interface ChangeRoleLayoutProps {
   children: React.ReactNode;
@@ -21,8 +22,8 @@ export default async function ChangeRoleLayout({
 
   const session = await getServerSessionErrorIfMissingProperties(rootLogger);
   const user_email = session.user.email;
-  let userHasPermission;
-  userHasPermission = await hasPermissions({
+
+  const userHasPermission = await hasPermissions({
     permissions_required: ADDING_USER_PERMISSIONS_REQUIRED,
     agreement_id: agreement_id,
     user_email: user_email,

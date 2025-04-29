@@ -1,21 +1,22 @@
-"use client";
+'use client';
+
+import BackLink from 'app/shared/backLink';
+import ErrorSummary from 'app/shared/errorSummary';
+import {
+  CheckboxInputField,
+  RadioButtonInputField,
+} from 'app/shared/formFields';
+import SubmitButton from 'app/shared/submitButton';
+import { useEffect } from 'react';
+import { useFormState } from 'react-dom';
 
 import {
-  RadioButtonInputField,
-  CheckboxInputField,
-} from "app/shared/formFields";
-import SubmitButton from "app/shared/submitButton";
-import { useFormState } from "react-dom";
-import {
   MULTIPLE_CHOICE_KEY,
-  QUESTIONS_ARRAY,
   Question,
+  QUESTIONS_ARRAY,
   SINGLE_CHOICE_KEY,
-} from "./consts";
-import ErrorSummary from "app/shared/errorSummary";
-import { useEffect } from "react";
-import BackLink from "app/shared/backLink";
-import styles from "./induction.module.css";
+} from './consts';
+import styles from './induction.module.css';
 
 interface QuestionClientProps {
   saved_question: number[] | undefined;
@@ -47,7 +48,7 @@ export default function QuestionClient({
 
   // NHS service manual states must move focus to error summary when it appears
   useEffect(() => {
-    document.getElementById("error-summary")?.focus();
+    document.getElementById('error-summary')?.focus();
   }, [state.error]);
 
   return (
@@ -67,24 +68,24 @@ export default function QuestionClient({
         <div
           className={
             state.error
-              ? "nhsuk-form-group nhsuk-form-group--error nhsuk-u-margin-bottom-7"
-              : "nhsuk-form-group nhsuk-u-margin-bottom-7"
+              ? 'nhsuk-form-group nhsuk-form-group--error nhsuk-u-margin-bottom-7'
+              : 'nhsuk-form-group nhsuk-u-margin-bottom-7'
           }
         >
           <fieldset className={styles.noBorder}>
-            <legend className="nhsuk-fieldset__legend">
-              <span className="nhsuk-caption-l nhsuk-caption--bottom nhsuk-u-margin-bottom-4">
+            <legend className='nhsuk-fieldset__legend'>
+              <span className='nhsuk-caption-l nhsuk-caption--bottom nhsuk-u-margin-bottom-4'>
                 Question {question_number}
               </span>
               <h1>{heading}</h1>
             </legend>
-            <span className="nhsuk-caption-l nhsuk-caption--top">
+            <span className='nhsuk-caption-l nhsuk-caption--top'>
               {subtext}
             </span>
 
             {state.error && (
-              <span className="nhsuk-error-message" id={question_error_id}>
-                <span className="nhsuk-u-visually-hidden">Error:</span>{" "}
+              <span className='nhsuk-error-message' id={question_error_id}>
+                <span className='nhsuk-u-visually-hidden'>Error:</span>{' '}
                 {state.error}
               </span>
             )}
@@ -100,7 +101,7 @@ export default function QuestionClient({
         </div>
 
         <SubmitButton>
-          {isFinalQuestion ? "Submit Answers" : "Continue"}
+          {isFinalQuestion ? 'Submit Answers' : 'Continue'}
         </SubmitButton>
       </form>
     </>
@@ -114,7 +115,7 @@ function QuestionInputs({
   saved_question,
   error_ids,
 }: {
-  type: Question["type"];
+  type: Question['type'];
   input_group: string;
   options: string[];
   saved_question: number[];
