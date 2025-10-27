@@ -1,10 +1,16 @@
-import { Metadata } from "next";
-import ChangeUserRoleForm from "./changeUserRoleForm";
-import changeUserRole from "./serverActions";
+import { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: "Change user role",
-};
+import { getWhiteLabelValues } from '@/config/whiteLabel';
+
+import ChangeUserRoleForm from './_components/changeUserRoleForm';
+import changeUserRole from './_components/serverActions';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const whiteLabelValues = getWhiteLabelValues();
+  return {
+    title: `Change user role - ${whiteLabelValues.acronym}`,
+  };
+}
 
 interface ChangeRolePageProps {
   params: { agreement_id: string; user: string };
@@ -15,15 +21,18 @@ export default async function ChangeRolePage({ params }: ChangeRolePageProps) {
 
   const user_email_decoded = decodeURIComponent(user);
 
+  const whiteLabelValues = getWhiteLabelValues();
+
   return (
-    <div className="nhsuk-grid-row">
-      <div className="nhsuk-grid-column-three-quarters">
+    <div className='nhsuk-grid-row'>
+      <div className='nhsuk-grid-column-three-quarters'>
         <>
           <ChangeUserRoleForm
             changeUserRole={changeUserRole.bind(null, {
               agreement_id,
               user_to_change_email: user_email_decoded,
             })}
+            whiteLabelValues={whiteLabelValues}
           />
         </>
       </div>

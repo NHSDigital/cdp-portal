@@ -1,17 +1,21 @@
+import 'cypress-axe';
+
+import { CookieNames } from '@/config/constants';
+
 import {
+  addUserConfirmUrl,
+  addUserUrl,
+  changeRoleUrl,
+  confirmChangeActivationUrl,
   describe_only_if_manage_users_flag_enabled,
   manageUsersUrl,
-  addUserUrl,
-  userDetailsUrl,
-  user_analyst_nc,
-  confirmChangeActivationUrl,
-  changeRoleUrl,
   setTestAddUserFormCookie,
-  addUserConfirmUrl,
-} from "../utils";
-import "cypress-axe";
+  user_analyst_nc,
+  userDetailsUrl,
+} from '../utils';
 
 // Every E2E test file needs this, or else retries pass when they should fail
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 beforeEach(() => {});
 
 // Important Note :
@@ -24,98 +28,101 @@ beforeEach(() => {});
 // we can check the header and footer separately in other tests if needed.
 
 describe_only_if_manage_users_flag_enabled(
-  "Accessibility - User Management pages",
+  'Accessibility - User Management pages',
   () => {
     beforeEach(() => {
-      cy.full_login("USER_MANAGER");
+      cy.full_login('USER_MANAGER');
     });
-    it("Header is accessible", () => {
+    it('Header is accessible', () => {
       cy.visit(manageUsersUrl());
       cy.injectAxe();
-      cy.checkA11y("header");
+      cy.checkA11y('header');
     });
-    it("Footer is accessible", () => {
+    it('Footer is accessible', () => {
       cy.visit(manageUsersUrl());
       cy.injectAxe();
-      cy.checkA11y("footer");
+      cy.checkA11y('footer');
     });
-    it("Manage users page is accessible", () => {
+    it('Manage users page is accessible', () => {
       cy.visit(manageUsersUrl());
       cy.injectAxe();
       cy.checkA11y();
     });
-    it("Manage users page is accessible with success message", () => {
-      cy.setCookie("manage_users_success_message", "My success message");
+    it('Manage users page is accessible with success message', () => {
+      cy.setCookie(
+        CookieNames.MANAGE_USERS_SUCCESS_MESSAGE,
+        'My success message',
+      );
       cy.visit(manageUsersUrl());
-      cy.get("p span").contains("My success message").should("exist");
+      cy.get('p span').contains('My success message').should('exist');
       cy.injectAxe();
       cy.checkA11y();
     });
-    it("Add user page is accessible", () => {
+    it('Add user page is accessible', () => {
       cy.visit(addUserUrl());
       cy.injectAxe();
       cy.checkA11y();
     });
-    it("Add user page with errors is accessible", () => {
+    it('Add user page with errors is accessible', () => {
       cy.visit(addUserUrl());
-      cy.get("button").contains("Continue").click();
+      cy.get('button').contains('Continue').click();
       cy.injectAxe();
       cy.checkA11y();
     });
-    it("Add user confirm page is accessible", () => {
+    it('Add user confirm page is accessible', () => {
       cy.visit(addUserUrl());
       // populate form and navigate to next page
       setTestAddUserFormCookie(
-        "Bob",
-        "Ross",
-        "bob.ross@example.com",
-        "Analyst"
+        'Bob',
+        'Ross',
+        'bob.ross@example.com',
+        'Analyst',
       );
       cy.visit(addUserConfirmUrl());
-      cy.url().should("include", "/add-user/confirm");
-      cy.get("h1")
-        .contains("Confirm user details", { timeout: 15 * 2000 })
-        .should("exist");
+      cy.url().should('include', '/add-user/confirm');
+      cy.get('h1')
+        .contains('Confirm user details', { timeout: 15 * 2000 })
+        .should('exist');
       // check the confirm user page
       cy.injectAxe();
       cy.checkA11y();
     });
-    it("Delete user confirmation (from confirm user details) is accessible", () => {
+    it('Delete user confirmation (from confirm user details) is accessible', () => {
       cy.visit(addUserUrl());
       // populate form and navigate to next page
       setTestAddUserFormCookie(
-        "Bob",
-        "Ross",
-        "bob.ross@example.com",
-        "Analyst"
+        'Bob',
+        'Ross',
+        'bob.ross@example.com',
+        'Analyst',
       );
       cy.visit(addUserConfirmUrl());
-      cy.url().should("include", "/add-user/confirm");
-      cy.get("h1")
-        .contains("Confirm user details", { timeout: 15 * 2000 })
-        .should("exist");
+      cy.url().should('include', '/add-user/confirm');
+      cy.get('h1')
+        .contains('Confirm user details', { timeout: 15 * 2000 })
+        .should('exist');
       // check the confirm user page
-      cy.get("a").contains("Delete").click().click();
-      cy.url().should("include", "/add-user/confirm/delete");
+      cy.get('a').contains('Delete').click().click();
+      cy.url().should('include', '/add-user/confirm/delete');
       cy.injectAxe();
       cy.checkA11y();
     });
-    it("User details page is accessible", () => {
+    it('User details page is accessible', () => {
       cy.visit(userDetailsUrl(user_analyst_nc.email));
       cy.injectAxe();
       cy.checkA11y();
     });
-    it("Confirm change activation page is accessible", () => {
+    it('Confirm change activation page is accessible', () => {
       cy.visit(confirmChangeActivationUrl(user_analyst_nc.email));
       cy.injectAxe();
       cy.checkA11y();
     });
-    it("Change user role page is accessible", () => {
+    it('Change user role page is accessible', () => {
       cy.visit(changeRoleUrl(user_analyst_nc.email));
       cy.injectAxe();
       cy.checkA11y();
     });
-  }
+  },
 );
 
 export {};

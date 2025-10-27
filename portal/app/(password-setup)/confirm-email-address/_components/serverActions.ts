@@ -1,21 +1,22 @@
-"use server";
+'use server';
 
-import callLambdaWithFullErrorChecking from "app/shared/callLambda";
-import { getLogger } from "helpers/logging/logger";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { CookieNames } from "types/enums";
-import { z } from "zod";
+import callLambdaWithFullErrorChecking from 'app/shared/callLambda';
+import { getLogger } from 'helpers/logging/logger';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
 
-const LOG = getLogger("ConfirmEmailAddress SubmitForm");
+import { CookieNames } from '@/config/constants';
+
+const LOG = getLogger('ConfirmEmailAddress SubmitForm');
 
 const ConfirmEmailSchema = z.object({
   email: z
-    .string({ invalid_type_error: "Email must be a string" })
+    .string({ invalid_type_error: 'Email must be a string' })
     .trim()
     .toLowerCase()
-    .min(1, { message: "Enter your email address" })
-    .email("This is not a valid email."),
+    .min(1, { message: 'Enter your email address' })
+    .email('This is not a valid email.'),
 });
 
 export type invokeVerifyEmailAddressType = {
@@ -23,11 +24,11 @@ export type invokeVerifyEmailAddressType = {
 };
 
 export async function invokeVerifyEmailAddress(
-  previousFormState: invokeVerifyEmailAddressType,
-  formData: FormData
+  _previousFormState: invokeVerifyEmailAddressType,
+  formData: FormData,
 ): Promise<invokeVerifyEmailAddressType> {
-  const email = formData.get("email_address") as string;
-  const id = formData.get("id") as string;
+  const email = formData.get('email_address') as string;
+  const id = formData.get('id') as string;
 
   const inputValidation = ConfirmEmailSchema.safeParse({
     email: email,
@@ -35,15 +36,15 @@ export async function invokeVerifyEmailAddress(
 
   if (!inputValidation.success) {
     return {
-      error: inputValidation.error.format().email!._errors[0],
+      error: inputValidation.error.format().email?._errors[0],
     };
   }
 
   const response = await callLambdaWithFullErrorChecking({
     function_name: process.env.USER_PASSWORD_SETUP_SERVICE_ARN as string,
     raw_payload: {
-      event_type: "verify_email_address",
-      user_email: email,
+      event_type: 'verify_email_address',
+      user_email: inputValidation.data.email,
       guid: id,
     },
     logger: LOG,
@@ -61,7 +62,16 @@ export async function invokeVerifyEmailAddress(
 
   if (
     !responseBody.valid_guid &&
-    responseBody.message == "The provided guid has expired"
+    responseBody.message == 'The user has already setup their password'
+  ) {
+    return {
+      error: 'Password has already been set up',
+    };
+  }
+
+  if (
+    !responseBody.valid_guid &&
+    responseBody.message == 'The provided guid has expired'
   ) {
     cookies().set(CookieNames.CONFIRMED_EMAIL, inputValidation.data.email, {
       secure: true,
@@ -71,6 +81,6 @@ export async function invokeVerifyEmailAddress(
   }
 
   return {
-    error: "Enter the email address used to set up your account",
+    error: 'Enter the email address used to set up your account',
   };
 }

@@ -1,3 +1,5 @@
+import 'cypress-axe';
+
 /// <reference types="cypress" />
 
 //
@@ -7,8 +9,8 @@
 // Each user type available must have a corresponding environment variable CYPRESS_${user_type}_TEST_CREDENTIALS
 // Set this is ./scripts/cypress-open-local.sh and ./scripts/cypress-run.sh
 
-Cypress.Commands.add("full_login", (user_type: AllowedUserType) => {
-  if (Cypress.env("BUILD_ENV") === "local") {
+Cypress.Commands.add('full_login', (user_type: AllowedUserType) => {
+  if (Cypress.env('BUILD_ENV') === 'local') {
     localLogin(user_type);
   } else {
     loginWithRemoteServer(user_type);
@@ -28,41 +30,62 @@ function localLogin(user_type: AllowedUserType) {
   cy.session(`local_login_${user_type}`, () => {
     const args = getUserCredentials(user_type);
 
-    cy.visit("/");
+    cy.visit('/');
 
-    cy.get("button.nhsuk-button.welcomeButton").click();
+    cy.get('button.nhsuk-button').contains('Sign in').click();
     cy.origin(
-      Cypress.env("KEYCLOAK_HOSTNAME"),
+      Cypress.env('KEYCLOAK_HOSTNAME'),
       { args },
       ({ username, password }) => {
-        cy.get("input#username").type(username);
-        cy.get("input#password").type(password, {
+        cy.get('input#username').type(username);
+        cy.get('input#password').type(password, {
           parseSpecialCharSequences: false,
         });
-        cy.get("#kc-login").click();
-      }
+        cy.get('#kc-login').click();
+      },
     );
-    cy.get("button.button").click();
-    cy.get("#content-header").contains("Logged in");
+    cy.get('button.button').click();
+    cy.get('#content-header').contains('Logged in');
   });
 }
 
 function loginWithRemoteServer(user_type: AllowedUserType) {
   cy.session(`full_login_${user_type}`, () => {
-    const { username, password } = getUserCredentials(user_type);
+    const args = getUserCredentials(user_type);
+    const service = Cypress.env('PORTAL_SERVICE');
 
-    cy.visit("/");
+    cy.visit('/');
 
-    cy.get("button.nhsuk-button.welcomeButton").click();
+    cy.get('button.nhsuk-button').contains('Sign in').click();
 
-    cy.get("input#username").type(username);
-    cy.get("input#password").type(password, {
-      parseSpecialCharSequences: false,
-    });
-    cy.get("#kc-login").click();
-
-    cy.get("#content-header").contains("Logged in");
+    if (service === 'CDP') {
+      cy.origin(
+        Cypress.env('KEYCLOAK_HOSTNAME'),
+        { args },
+        ({ username, password }) => {
+          cy.get('input#username').type(username);
+          cy.get('input#password').type(password, {
+            parseSpecialCharSequences: false,
+          });
+          cy.get('#kc-login').click();
+        },
+      );
+      cy.get('button.button').click();
+      cy.get('#content-header').contains('Logged in');
+    } else if (service === 'SDE') {
+      cy.get('input#username').type(args.username);
+      cy.get('input#password').type(args.password, {
+        parseSpecialCharSequences: false,
+      });
+      cy.get('#kc-login').click();
+      cy.get('#content-header').contains('Logged in');
+    }
   });
 }
+
+Cypress.Commands.add('checkAccessibility', (selector: string) => {
+  cy.injectAxe();
+  cy.checkA11y(selector);
+});
 
 export {};

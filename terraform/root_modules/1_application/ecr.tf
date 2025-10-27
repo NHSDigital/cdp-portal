@@ -126,8 +126,9 @@ module "ecr_kms_key" {
   environment = var.environment
   policies    = [data.aws_iam_policy_document.allow_ecs_access_to_kms_key.json]
 
-  admin_role_arns      = local.kms_key_owner_arns
-  sso_admin_role_names = var.sso_admin_role_names
+  admin_role_arns          = local.kms_key_owner_arns
+  sso_admin_role_names     = var.sso_admin_role_names
+  sso_read_only_role_names = var.sso_read_only_role_names
 }
 
 data "aws_iam_policy_document" "allow_ecs_access_to_kms_key" {
@@ -149,7 +150,7 @@ data "aws_iam_policy_document" "allow_ecs_access_to_kms_key" {
 
     principals {
       type        = "AWS"
-      identifiers = [aws_iam_role.portal_execution.arn]
+      identifiers = [aws_iam_role.sde_portal_execution.arn, aws_iam_role.cdp_portal_execution.arn]
     }
 
     resources = [

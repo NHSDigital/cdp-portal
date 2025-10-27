@@ -2,7 +2,7 @@ name: Default Pipeline
 on:
   push:
     branches:
-    - main
+    - "**"
   pull_request:
 
 env:

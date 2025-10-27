@@ -1,27 +1,28 @@
-"use server";
+'use server';
 
-import callLambdaWithFullErrorChecking from "app/shared/callLambda";
-import { getLogger } from "helpers/logging/logger";
-import { z } from "zod";
+import callLambdaWithFullErrorChecking from 'app/shared/callLambda';
+import { getLogger } from 'helpers/logging/logger';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
 
-const LOG = getLogger("SetUpPassword ServerActions");
+const LOG = getLogger('SetUpPassword ServerActions');
 
 const NewPasswordSchema = z.object({
   enter_password: z
     .string({
-      invalid_type_error: "Email must be a string",
-      required_error: "Password is required",
+      invalid_type_error: 'Email must be a string',
+      required_error: 'Password is required',
     })
     .trim()
-    .min(12, { message: "Password must have 12 characters or more" })
-    .regex(/[a-z]/, "Password must have at least one lowercase letter")
-    .regex(/[A-Z]/, "Password must have at least one uppercase letter")
-    .regex(/[0-9]/, "Password must have at least one number")
+    .min(14, { message: 'Password must have 14 characters or more' })
+    .regex(/[a-z]/, 'Password must have at least one lowercase letter')
+    .regex(/[A-Z]/, 'Password must have at least one uppercase letter')
+    .regex(/[0-9]/, 'Password must have at least one number')
     .regex(
       /[^A-Za-z0-9]/,
-      "Password must contain at least one special character"
+      'Password must contain at least one special character',
     )
-    .regex(/^(?!.*(.)\1).*$/, "Password cannot have repeating characters"),
+    .regex(/^(?!.*(.)\1).*$/, 'Password cannot have repeating characters'),
 });
 
 export type invokeSetUpPasswordType = {
@@ -32,16 +33,26 @@ export type invokeSetUpPasswordType = {
 };
 
 export async function invokeSetUpPassword(
-  previousFormState: invokeSetUpPasswordType,
-  formData: FormData
+  _previousFormState: invokeSetUpPasswordType,
+  formData: FormData,
 ): Promise<invokeSetUpPasswordType> {
-  const enter_password = formData.get("enter_password") as string;
-  const confirm_password = formData.get("confirm_password") as string;
+  const enter_password = formData.get('enter_password') as string;
+  const confirm_password = formData.get('confirm_password') as string;
+  const user_email = formData.get('user_email') as string;
+  const guid = formData.get('guid') as string;
+
+  if (!enter_password) {
+    return {
+      errors: {
+        enter_password: ['Enter a password'],
+      },
+    };
+  }
 
   if (enter_password != confirm_password) {
     return {
       errors: {
-        confirm_password: ["Passwords must match"],
+        confirm_password: ['Passwords must match'],
       },
     };
   }
@@ -57,14 +68,33 @@ export async function invokeSetUpPassword(
     };
   }
 
-  return {};
+  const response = await callLambdaWithFullErrorChecking({
+    function_name: process.env.USER_PASSWORD_SETUP_SERVICE_ARN as string,
+    raw_payload: {
+      event_type: 'set_password',
+      user_email,
+      guid,
+      new_password: inputValidation.data.enter_password,
+    },
+    logger: LOG,
+    log_result: true,
+  });
+  const responseBody = JSON.parse(response.body);
+
+  if (responseBody.message == 'The user has already setup their password') {
+    return {
+      errors: { enter_password: ['Password has already been set up'] },
+    };
+  }
+
+  redirect(`/welcome`);
 }
 
 export async function verifyEmailAndGUID(user_email: string, guid: string) {
   const response = await callLambdaWithFullErrorChecking({
     function_name: process.env.USER_PASSWORD_SETUP_SERVICE_ARN as string,
     raw_payload: {
-      event_type: "verify_email_address",
+      event_type: 'verify_email_address',
       user_email,
       guid,
     },

@@ -1,18 +1,24 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { CookieNames } from "types/enums";
-import LinkExpiredContent from "./_components/LinkExpiredContent";
-import { Metadata } from "next";
+import { Metadata } from 'next';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: "Link expired",
-};
+import { CookieNames } from '@/config/constants';
+import { getWhiteLabelValues } from '@/config/whiteLabel';
+
+import LinkExpiredContent from './_components/LinkExpiredContent';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const whiteLabelValues = getWhiteLabelValues();
+  return {
+    title: `Link expired - ${whiteLabelValues.acronym}`,
+  };
+}
 
 export default function LinkExpiredPage() {
   const email = cookies().get(CookieNames.CONFIRMED_EMAIL)?.value;
 
   if (!email) {
-    redirect("/");
+    redirect('/');
   }
 
   return <LinkExpiredContent email={email} />;

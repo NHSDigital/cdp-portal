@@ -19,10 +19,10 @@ BANNER
 cd "src/aws-lambda/$PARENT_PROJECT"
 
 echo "Checking lockfile"
-poetry lock --check
+poetry check --lock
 
 echo "Installing runtime dependencies"
-poetry install --no-root --only main --sync
+poetry sync --no-root --only main
 
 echo "Uninstalling pip and setuptools to exclude from output"
 VENV=$(poetry env info --path)

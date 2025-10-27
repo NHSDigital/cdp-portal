@@ -1,29 +1,29 @@
-import { NextResponse } from "next/server";
-import { withAuth } from "next-auth/middleware";
-import { getToken } from "next-auth/jwt";
-import hasPermissions from "app/services/hasPermissions";
+import hasPermissions from 'app/services/hasPermissions';
+import { NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import { withAuth } from 'next-auth/middleware';
 
-const PERMISSIONS_REQUIRED = ["portal.maintenance_access"];
+import { Actions } from './config/constants';
 
 const PASSWORD_SETUP_FLOW_ROUTES = [
-  "/confirm-email-address",
-  "/set-up-password",
-  "/link-expired",
+  '/confirm-email-address',
+  '/set-up-password',
+  '/link-expired',
 ];
 
 export default withAuth(
   async function middleware(req) {
     const url = new URL(req.url);
-    const agreement_id = url.pathname.split("/")[2];
+    const agreement_id = url.pathname.split('/')[2];
     const isMaintenanceEnabled = process.env.MAINTENANCE_MODE;
 
-    if (isMaintenanceEnabled == "true") {
+    if (isMaintenanceEnabled == 'true') {
       const req_token = await getToken({ req });
       const user_email = req_token?.email;
       let userHasMaintainerRole = false;
       if (user_email) {
         userHasMaintainerRole = await hasPermissions({
-          permissions_required: PERMISSIONS_REQUIRED,
+          permissions_required: Actions.MAINTENANCE_ACCESS,
           agreement_id: agreement_id,
           user_email: user_email,
         });
@@ -33,17 +33,17 @@ export default withAuth(
 
       if (
         !userHasMaintainerRole &&
-        request_path !== "/maintenance" &&
-        request_path !== "/logout_confirm"
+        request_path !== '/maintenance' &&
+        request_path !== '/logout_confirm'
       ) {
-        return NextResponse.redirect(new URL("/maintenance", req.url));
+        return NextResponse.redirect(new URL('/maintenance', req.url));
       }
     }
 
     if (PASSWORD_SETUP_FLOW_ROUTES.includes(req.nextUrl.pathname)) {
       // if user logged in do not permit access to page
       if (await getToken({ req })) {
-        return NextResponse.redirect(new URL("/404", req.url));
+        return NextResponse.redirect(new URL('/404', req.url));
       }
     }
 
@@ -51,7 +51,7 @@ export default withAuth(
   },
   {
     pages: {
-      signIn: "/welcome",
+      signIn: '/welcome',
     },
     callbacks: {
       authorized({ req, token }) {
@@ -61,7 +61,7 @@ export default withAuth(
         // need to also allow maintanence so redirect work as intended
         if (
           (PASSWORD_SETUP_FLOW_ROUTES.includes(req_path) ||
-            req_path == "/maintenance") &&
+            req_path == '/maintenance') &&
           !token
         ) {
           return true;
@@ -70,7 +70,7 @@ export default withAuth(
         return !!token;
       },
     },
-  }
+  },
 );
 
 export const config = {
@@ -81,6 +81,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - assets (logos, CSS, favicons)
      */
-    "/((?!api|_next/static|_next/image|assets|welcome|logout_confirm|403|404|405|500).*)",
+    '/((?!api|_next/static|_next/image|assets|welcome|logout_confirm|403|404|405|500).*)',
   ],
 };

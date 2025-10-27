@@ -1,62 +1,54 @@
-import React from "react";
-import { Metadata } from "next";
-import getUserAgreements from "services/getUserAgreements";
-import { getLoggerAndSession } from "./shared/logging";
-import { redirect } from "next/navigation";
-import hasPermissions from "./services/hasPermissions";
-import { Actions } from "types/enums";
-import hasFeatureFlagEnabled from "app/services/hasFeatureFlagEnabled";
-import { INDUCTION_FEATURE_FLAG } from "./induction/consts";
-import getAllAgreements from "services/getAllAgreements";
-import SelectAgreementPageClient from "./pageClient";
+import hasFeatureFlagEnabled from 'app/services/hasFeatureFlagEnabled';
+import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import React from 'react';
+import getUserAgreements from 'services/getUserAgreements';
 
-export const metadata: Metadata = {
-  title: "Home - Select Agreement - NHS Secure Data Environment",
-};
+import { SelectAgreementPageContent } from '@/app/_components/SelectAgreementPageContent';
+import { getInductionRedirectTarget } from '@/app/shared/inductionHelpers';
+import { FeatureFlags } from '@/config/constants';
+import { getWhiteLabelValues } from '@/config/whiteLabel';
+
+import { getLoggerAndSession } from './shared/logging';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const whiteLabelValues = getWhiteLabelValues();
+  return {
+    title: `Select agreement - ${whiteLabelValues.acronym}`,
+  };
+}
 
 export default async function SelectAgreementPage() {
-  const { logger, session } = await getLoggerAndSession("SelectAgreementsPage");
-  logger.info({
-    message: `User has successfully signed in.`,
-  });
+  const { logger, session } = await getLoggerAndSession('SelectAgreementsPage');
+  logger.info({ message: `User has successfully signed in.` });
 
   const inductionFeatureFlagEnabled = await hasFeatureFlagEnabled({
-    featureFlagName: INDUCTION_FEATURE_FLAG,
+    featureFlagName: FeatureFlags.INDUCTION,
   });
 
   const { activeAgreements, inductionNeeded, inductionPassed } =
     await getUserAgreements(session.user.email);
 
-  if (inductionFeatureFlagEnabled && inductionNeeded && !inductionPassed) {
-    redirect("/induction");
-  }
-
-  const userHasSeeAllAgreementsPermission = await hasPermissions({
-    permissions_required: [Actions.SEE_ALL_AGREEMENTS],
-    user_email: session.user.email,
+  const inductionRedirectTarget = getInductionRedirectTarget({
+    inductionFeatureFlagEnabled,
+    inductionNeeded,
+    inductionPassed,
   });
 
-  const all_agreements = await getAllAgreements();
-  const merge_all_agreements_with_active_agreements = all_agreements.concat(
-    activeAgreements.filter(
-      (active) =>
-        !all_agreements.some((all) => all.agreement_id === active.agreement_id)
-    )
-  );
-
-  const agreements_to_display = userHasSeeAllAgreementsPermission
-    ? merge_all_agreements_with_active_agreements
-    : activeAgreements;
-
-  if (agreements_to_display.length == 1) {
-    redirect(`/agreement/${agreements_to_display[0].agreement_id}`);
+  if (inductionRedirectTarget) {
+    redirect(inductionRedirectTarget);
   }
 
+  if (activeAgreements.length === 1) {
+    redirect(`/agreement/${activeAgreements[0].agreement_id}`);
+  }
+
+  const whiteLabelValues = getWhiteLabelValues();
+
   return (
-    <>
-      <SelectAgreementPageClient
-        agreements_to_display={agreements_to_display}
-      />
-    </>
+    <SelectAgreementPageContent
+      agreements_to_display={activeAgreements}
+      whiteLabelValues={whiteLabelValues}
+    />
   );
 }

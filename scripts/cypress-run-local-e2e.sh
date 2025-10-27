@@ -5,6 +5,13 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 . "$SCRIPT_DIR/variables.sh"
 set -e
 
+if [ "${PORTAL_SERVICE}" = "CDP" ]; then
+  SPEC="cypress/e2e_cdp/**/*.cy.ts"
+else
+  SPEC="cypress/e2e/**/*.cy.ts"
+fi
+export CYPRESS_PORTAL_SERVICE="${PORTAL_SERVICE}"  
+
 # Run portal server in the background (assumes "false" is the default mode)
 scripts/run-portal-server-in-background.sh false
 
@@ -24,11 +31,12 @@ export CYPRESS_BASE_URL="http://localhost:3000"
 export CYPRESS_KEYCLOAK_HOSTNAME=$keycloak_dev_url
 export CYPRESS_BUILD_ENV="local"
 export BUILD_ENV="local"
+
 echo "Cypress base URL is ${CYPRESS_BASE_URL}"
 
 # Run Cypress tests in normal mode
 cd portal
-AWS_PROFILE=${portal_dev_profile} npx cypress run
+AWS_PROFILE=${portal_dev_profile} npx cypress run --spec "$SPEC"
 
 # Kill the portal server process after first set of tests
 for pid in $(ps -ef | grep portal/node_modules/.bin/next | grep -v grep | awk '{print $2}'); do
@@ -44,4 +52,4 @@ sleep 10
 
 # Run Cypress tests in maintenance mode
 cd portal
-MAINTENANCE_MODE=true AWS_PROFILE=${portal_dev_profile} npx cypress run
+MAINTENANCE_MODE=true AWS_PROFILE=${portal_dev_profile} npx cypress run --spec "$SPEC"

@@ -1,14 +1,17 @@
-import { Metadata } from "next";
-import { getLogger } from "helpers/logging/logger";
-import getAgreementUserDetails from "app/services/getAgreementUserDetails";
-import ConfirmChangeActivationPage from "./confirmChangeActivationPage";
-import changeActivation from "./serverActions";
+import getAgreementUserDetails from 'app/services/getAgreementUserDetails';
+import { Metadata } from 'next';
 
-const logger = getLogger("confirmChangeActivationStatus");
+import { getWhiteLabelValues } from '@/config/whiteLabel';
 
-export const metadata: Metadata = {
-  title: "Confirm change activation",
-};
+import ConfirmChangeActivationPage from './_components/confirmChangeActivationPage';
+import changeActivation from './_components/serverActions';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const whiteLabelValues = getWhiteLabelValues();
+  return {
+    title: `Confirm change activation - ${whiteLabelValues.acronym}`,
+  };
+}
 
 interface ManageUsersPageProps {
   params: { agreement_id: string; user: string };
@@ -23,7 +26,7 @@ export default async function confirmChangeActivationStatus({
 
   const user_details = await getAgreementUserDetails(
     agreement_id,
-    user_email_decoded
+    user_email_decoded,
   );
 
   const users_full_name = `${user_details.first_name} ${user_details.last_name}`;
@@ -31,17 +34,20 @@ export default async function confirmChangeActivationStatus({
   const user_is_active =
     user_details.enabled_agreement && user_details.enabled_global;
 
+  const whiteLabelValues = getWhiteLabelValues();
+
   return (
-    <div className="nhsuk-grid-row">
-      <div className="nhsuk-grid-column-three-quarters">
+    <div className='nhsuk-grid-row'>
+      <div className='nhsuk-grid-column-three-quarters'>
         <ConfirmChangeActivationPage
-          users_full_name={users_full_name}
-          users_is_active={user_is_active}
+          usersFullName={users_full_name}
+          userIsActive={user_is_active}
           changeActivation={changeActivation.bind(null, {
             agreement_id,
             user_to_change_activation_email: user_email_decoded,
             new_activation: !user_is_active,
           })}
+          whiteLabelKey={whiteLabelValues.acronym}
         />
       </div>
     </div>

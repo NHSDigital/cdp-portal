@@ -1,17 +1,21 @@
-[tool.poetry]
+[project]
 name = "slack_alert"
 version = "0.1.0"
 description = ""
-authors = ["First Last<first.last@example.com>"]
+requires-python = ">=3.13,<3.14"
 
-[tool.poetry.dependencies]
-python = "^3.9"
-aws-lambda-powertools = "^1.25.6"
+authors = [
+    { name="First Last", email="first.last@example.com" },
+]
+
+dependencies = [
+    "aws-lambda-powertools==3.19.0",
+]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.2.0"
-urllib3 = "^1.26.9"
-moto = "^3.1.4"
+pytest = "^8.4.1"
+urllib3 = "^2.5.0"
+moto = "^5.1.10"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -1,7 +1,14 @@
-import QuestionClient from "./questionClient";
-import submitQuestionAnswer from "./serverActions";
-import { redirect } from "next/navigation";
-import parseInductionCookie from "app/induction/inductionCookie";
+import parseInductionCookie from 'app/induction/_components/inductionCookie';
+
+import { QUESTIONS_ARRAY } from '@/app/induction/question/[question_number]/_components/consts';
+import {
+  getBackLinkPath,
+  goToFirstUnansweredQuestion,
+} from '@/app/induction/question/[question_number]/_components/questionHelper';
+import { getWhiteLabelValues } from '@/config/whiteLabel';
+
+import QuestionClient from './_components/questionClient';
+import submitQuestionAnswer from './_components/serverActions';
 
 interface QuestionPageProps {
   params: { question_number: string };
@@ -18,56 +25,25 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
   const isFinalQuestion =
     cookie_wrong.length > 0
       ? question_number == cookie_wrong.at(-1)
-      : question_number == 10;
+      : question_number == QUESTIONS_ARRAY.length;
+
+  const whiteLabelValues = getWhiteLabelValues();
 
   return (
-    <QuestionClient
-      saved_question={saved_question}
-      question_number={question_number}
-      goBackLinkPath={getBackLinkPath(question_number, cookie_wrong)}
-      isFinalQuestion={isFinalQuestion}
-      submitQuestionAnswer={submitQuestionAnswer.bind(null, {
-        question_number,
-      })}
-    />
+    <section data-cy={`induction-question-${question_number}`}>
+      <QuestionClient
+        saved_question={saved_question}
+        question_number={question_number}
+        goBackLinkPath={getBackLinkPath({
+          current_question_number: question_number,
+          cookie_wrong: cookie_wrong,
+        })}
+        isFinalQuestion={isFinalQuestion}
+        submitQuestionAnswer={submitQuestionAnswer.bind(null, {
+          question_number,
+        })}
+        whiteLabelValues={whiteLabelValues}
+      />
+    </section>
   );
-}
-
-function getBackLinkPath(
-  current_question_number: number,
-  cookie_wrong: number[]
-) {
-  if (current_question_number === 1) return undefined;
-
-  if (cookie_wrong.length > 0) {
-    const current_question_index_in_wrong = cookie_wrong.indexOf(
-      current_question_number
-    );
-
-    return current_question_index_in_wrong === 0
-      ? undefined
-      : `/induction/question/${
-          cookie_wrong[current_question_index_in_wrong - 1]
-        }`;
-  }
-
-  return `/induction/question/${current_question_number - 1}`;
-}
-
-function goToFirstUnansweredQuestion(
-  current_question: number,
-  answers: { [index: string]: number[] },
-  wrong: number[]
-) {
-  let questions = wrong.length
-    ? wrong
-    : Array.from(Array(10).keys()).map((i) => i + 1);
-
-  for (let i of questions) {
-    if (i == current_question) return;
-
-    if (!answers[i.toString()]) {
-      redirect(`/induction/question/${i}`);
-    }
-  }
 }
