@@ -92,3 +92,47 @@ resource "aws_wafv2_web_acl_association" "portal" {
   resource_arn = aws_lb.ecs.arn
   web_acl_arn  = aws_wafv2_web_acl.portal.arn
 }
+
+resource "aws_lb_listener_rule" "cdp_portal" {
+  listener_arn = aws_lb_listener.https.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.cdp_portal.arn
+  }
+
+  condition {
+    host_header {
+      values = [aws_route53_record.cdp_portal.fqdn]
+    }
+  }
+
+  condition {
+    path_pattern {
+      values = ["*"]
+    }
+  }
+}
+
+
+resource "aws_lb_listener_certificate" "cdp_cert" {
+  listener_arn    = aws_lb_listener.https.arn
+  certificate_arn = aws_acm_certificate.cdp_portal_https.arn
+}
+
+resource "aws_lb_target_group" "cdp_portal" {
+  name        = "${var.environment_prefix}cdp-portal-external-alb"
+  port        = local.portal_port
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.portal.id
+  target_type = "ip"
+
+  stickiness {
+    type            = "lb_cookie"
+    cookie_duration = 86400
+  }
+
+  health_check {
+    path = "/api/auth/signin"
+  }
+}

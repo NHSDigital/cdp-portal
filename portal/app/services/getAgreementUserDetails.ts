@@ -1,17 +1,18 @@
-import { notFound } from "next/navigation";
-import { callLambdaWithoutFullErrorChecking } from "app/shared/callLambda";
-import { getLoggerAndSession } from "app/shared/logging";
+import { callLambdaWithoutFullErrorChecking } from 'app/shared/callLambda';
+import { getLoggerAndSession } from 'app/shared/logging';
+import { notFound } from 'next/navigation';
+
 import {
-  User,
   calculateUserStatus,
   changeBasicAgreementAccessToAnalyst,
-} from "./getUsersInAgreement";
+  User,
+} from './getUsersInAgreement';
 
-const LOGGER_NAME = "getAgreementUserDetails";
+const LOGGER_NAME = 'getAgreementUserDetails';
 
 export default async function getAgreementUserDetails(
   agreement_id: string,
-  user_email: string
+  user_email: string,
 ): Promise<User> {
   const { logger } = await getLoggerAndSession(LOGGER_NAME, {
     agreementId: agreement_id,
@@ -29,13 +30,13 @@ export default async function getAgreementUserDetails(
 
     if (resultJson.statusCode === 404) {
       logger.error({
-        state: "User not found",
+        state: 'User not found',
         status: 404,
       });
       notFound();
     } else if (resultJson.statusCode !== 200) {
       throw new Error(
-        "resultJson.statusCode not 200 in getAgreementUserDetails request"
+        'resultJson.statusCode not 200 in getAgreementUserDetails request',
       );
     }
 
@@ -43,23 +44,23 @@ export default async function getAgreementUserDetails(
     user = changeBasicAgreementAccessToAnalyst(user);
     user = calculateUserStatus(user);
 
-    logger.info({ message: "Successfully retrieved user details" });
+    logger.info({ message: 'Successfully retrieved user details' });
 
     return user;
   } catch (e) {
-    if (e.digest == "NEXT_NOT_FOUND") {
+    if (e.digest == 'NEXT_NOT_FOUND') {
       logger.error({
-        state: "User not found",
+        state: 'User not found',
         status: 404,
       });
       notFound();
     }
 
     logger.error({
-      state: "Error in getUsersInAgreement request",
+      state: 'Error in getUsersInAgreement request',
       status: 500,
       error: e,
     });
-    throw new Error("Error getting agreement user details");
+    throw new Error('Error getting agreement user details');
   }
 }

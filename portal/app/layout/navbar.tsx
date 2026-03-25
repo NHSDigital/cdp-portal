@@ -1,10 +1,17 @@
-"use client";
+'use client';
 
-import { useParams, usePathname } from "next/navigation";
-import styles from "./layout.module.css";
-import Link from "next/link";
+import Link from 'next/link';
+import { useParams, usePathname } from 'next/navigation';
 
-export default function Navbar() {
+import { WhiteLabelEntry } from '@/config/whiteLabel';
+
+import styles from './layout.module.css';
+
+export default function Navbar({
+  whiteLabelValues,
+}: {
+  whiteLabelValues: WhiteLabelEntry;
+}) {
   const { agreement_id } = useParams<{ agreement_id?: string }>() || {};
   const current_path = usePathname();
 
@@ -22,7 +29,10 @@ export default function Navbar() {
   return (
     <>
       {/* Main navbar */}
-      <PageSelectorBar agreement_id={agreement_id} />
+      <PageSelectorBar
+        agreement_id={agreement_id}
+        whiteLabelValues={whiteLabelValues}
+      />
       {/* Change agreement navbar */}
       <ChangeAgreementBar
         agreement_id={agreement_id}
@@ -32,14 +42,20 @@ export default function Navbar() {
   );
 }
 
-function PageSelectorBar({ agreement_id }: { agreement_id: string }) {
+function PageSelectorBar({
+  agreement_id,
+  whiteLabelValues,
+}: {
+  agreement_id: string;
+  whiteLabelValues: WhiteLabelEntry;
+}) {
   return (
-    <div className="nhsuk-width-container">
+    <div className='nhsuk-width-container'>
       <nav
-        className="nhsuk-navigation"
-        id="header-navigation"
-        role="navigation"
-        aria-label="Primary navigation"
+        className='nhsuk-navigation'
+        id='header-navigation'
+        role='navigation'
+        aria-label='Primary navigation'
       >
         <ul
           className={`nhsuk-header__navigation-list ${styles.navigationList}`}
@@ -48,15 +64,15 @@ function PageSelectorBar({ agreement_id }: { agreement_id: string }) {
             className={`nhsuk-header__navigation-item ${styles.listItemRightMargin}`}
           >
             <a
-              className="nhsuk-header__navigation-link"
+              className='nhsuk-header__navigation-link'
               href={`/agreement/${agreement_id}`}
             >
-              SDE Portal
+              {whiteLabelValues.acronym} Portal
             </a>
           </li>
-          <li className="nhsuk-header__navigation-item">
+          <li className='nhsuk-header__navigation-item'>
             <a
-              className="nhsuk-header__navigation-link"
+              className='nhsuk-header__navigation-link'
               href={`/agreement/${agreement_id}/manage-users`}
             >
               Manage users
@@ -78,14 +94,14 @@ function ChangeAgreementBar({
   return (
     <nav
       className={`nhsuk-breadcrumb ${styles.changeAgreementBar} nhsuk-body-m nhsuk-u-margin-bottom-0`}
-      id="change-agreement-bar"
-      role="navigation"
-      aria-label="Currently selected agreement"
+      id='change-agreement-bar'
+      role='navigation'
+      aria-label='Currently selected agreement'
     >
-      <div className="nhsuk-width-container">
+      <div className='nhsuk-width-container'>
         <strong>Reference Number:</strong> {agreement_id.toUpperCase()}
         {show_change_agreement_link && (
-          <Link href="/" className={`${styles.linkFloatRight}`}>
+          <Link href='/' className={`${styles.linkFloatRight}`}>
             Change agreement
           </Link>
         )}

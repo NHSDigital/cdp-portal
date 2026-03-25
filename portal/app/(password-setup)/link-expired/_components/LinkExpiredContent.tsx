@@ -1,30 +1,32 @@
-"use client";
+'use client';
 
-import SubmitButton from "app/shared/submitButtonClient";
-import React from "react";
-import { useFormState } from "react-dom";
-import { invokeResendEmail, invokeResendEmailType } from "./serverActions";
-import { getLogger } from "helpers/logging/logger";
-import SuccessBanner from "app/_components/SuccessBanner";
+import SuccessBanner from 'app/_components/SuccessBanner';
+import SubmitButton from 'app/shared/submitButtonClient';
+import { useActionState } from 'react';
 
-const LOG = getLogger("LinkExpiredPage");
+import {
+  NATIONAL_SERVICE_DESK_EMAIL,
+  NATIONAL_SERVICE_DESK_TELEPHONE,
+} from '@/config/constants';
+
+import { invokeResendEmail, invokeResendEmailType } from './serverActions';
 
 const initialFormState: invokeResendEmailType = {
   success: false,
 };
 
 export default function LinkExpiredContent({ email }: { email: string }) {
-  const [formState, formAction] = useFormState(
+  const [formState, formAction] = useActionState(
     invokeResendEmail,
-    initialFormState
+    initialFormState,
   );
 
   return (
     <>
       {formState.success && (
         <SuccessBanner
-          data-cy="success-banner"
-          successMessage={"Your email has been resent"}
+          data-cy='success-banner'
+          successMessage={'Your email has been resent'}
         />
       )}
       <h1>Setup link expired</h1>
@@ -34,14 +36,18 @@ export default function LinkExpiredContent({ email }: { email: string }) {
         hours.
       </p>
       <p>
-        If you&apos;re seeing this message in error, contact support at{" "}
-        <a href="mailto:ssd.nationalservicedesk@nhs.net" target="_blank">
-          ssd.nationalservicedesk@nhs.net
-        </a>{" "}
-        or call 0300 303 5035.
+        If you&apos;re seeing this message in error, contact support at{' '}
+        <a
+          href={`mailto:${NATIONAL_SERVICE_DESK_EMAIL}`}
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          {NATIONAL_SERVICE_DESK_EMAIL}
+        </a>{' '}
+        or call {NATIONAL_SERVICE_DESK_TELEPHONE}.
       </p>
       <form action={formAction}>
-        <input type="hidden" name="email" value={email} />
+        <input type='hidden' name='email' value={email} />
         <SubmitButton>Request a new link</SubmitButton>
       </form>
     </>

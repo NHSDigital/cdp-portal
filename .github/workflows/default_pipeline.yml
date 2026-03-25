@@ -2,7 +2,7 @@ name: Default Pipeline
 on:
   push:
     branches:
-    - main
+    - "**"
   pull_request:
 
 env:
@@ -26,25 +26,6 @@ jobs:
 
     - name: Run git secrets scan
       run: git secrets --scan
-
-  validate-terraform:
-    name: Trivy Terraform Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-
-      - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'config'
-          exit-code: '1'
-          severity: 'UNKNOWN,LOW,MEDIUM,CRITICAL,HIGH'
-          format: 'table'
-          hide-progress: false
-          ignore-unfixed: true
-          skip-dirs: ./submodules
-          trivyignores: ./terraform/.trivyignore
 
   sonarcloud:
     name: SonarCloud

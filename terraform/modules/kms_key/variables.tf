@@ -18,5 +18,10 @@ variable "admin_role_arns" {
 
 variable "sso_admin_role_names" {
   type        = list(string)
-  description = "The names of the SSO roles to give KMS admin to, like 'Admin' or 'datarefinery_developer'"
+  description = "The names of the SSO roles to give KMS admin to, like 'datarefinery_admin' or 'datarefinery_developer'"
+}
+
+variable "sso_read_only_role_names" {
+  type        = list(string)
+  description = "The names of the SSO roles to give KMS Read only roles to, like 'datarefinery_triage' or 'datarefinery_readonly"
 }

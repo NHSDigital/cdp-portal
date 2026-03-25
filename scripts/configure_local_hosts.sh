@@ -1,6 +1,30 @@
 #!/bin/bash
+
+
+if [ -z "$BUILD_ENV" ]; then
+    echo "Error: BUILD_ENV environment variable is not set."
+    exit 1
+fi
+
+echo "BUILD_ENV is set to: $BUILD_ENV"
+
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
-. "$SCRIPT_DIR/variables.sh"
+
+case "$BUILD_ENV" in
+    "dev")
+        echo "Running development script..."
+        . "$SCRIPT_DIR/variables.sh"
+        ;;
+    "dev2")
+        echo "Running production script..."
+        . "$SCRIPT_DIR/variables_dev2.sh"
+        ;;
+    *)
+        echo "Error: Unknown BUILD_ENV value: $BUILD_ENV"
+        exit 1
+        ;;
+esac
+
 set -eo pipefail
 
 # Use this to configure your local hosts file to alias the dev public network

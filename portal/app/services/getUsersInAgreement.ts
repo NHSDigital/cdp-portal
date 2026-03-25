@@ -1,7 +1,7 @@
-import callLambdaWithFullErrorChecking from "app/shared/callLambda";
-import { getLoggerAndSession } from "app/shared/logging";
+import callLambdaWithFullErrorChecking from 'app/shared/callLambda';
+import { getLoggerAndSession } from 'app/shared/logging';
 
-const LOGGER_NAME = "getUsersInAgreement";
+const LOGGER_NAME = 'getUsersInAgreement';
 
 export interface RawUser {
   first_name: string;
@@ -19,11 +19,13 @@ export interface RawUser {
   reactivated_timestamp_agreement?: string;
   disabled_timestamp_agreement?: string;
   disabled_timestamp_global?: string;
-  induction: { passed: true; passed_timestamp: string } | { passed: false };
+  induction:
+    | { passed: true; passed_timestamp: string }
+    | { passed: false; passed_timestamp?: undefined };
 }
 
 export interface User extends RawUser {
-  calculated_status: "Activated" | "Deactivated" | "Pending Induction";
+  calculated_status: 'Activated' | 'Deactivated' | 'Pending Induction';
 }
 
 export interface GetUsersInAgreementResponse {
@@ -32,7 +34,7 @@ export interface GetUsersInAgreementResponse {
 }
 
 const getUsersInAgreement = async (
-  agreement_id: string
+  agreement_id: string,
 ): Promise<GetUsersInAgreementResponse> => {
   const { logger } = await getLoggerAndSession(LOGGER_NAME, {
     agreementId: agreement_id,
@@ -52,11 +54,11 @@ const getUsersInAgreement = async (
     return { users, agreement };
   } catch (e) {
     logger.error({
-      state: "Error in getUsersInAgreement request",
+      state: 'Error in getUsersInAgreement request',
       status: 500,
       error: e,
     });
-    throw new Error("Error getting all the users in the agreement");
+    throw new Error('Error getting all the users in the agreement');
   }
 };
 
@@ -64,24 +66,24 @@ export function changeBasicAgreementAccessToAnalyst(user: RawUser): RawUser {
   return {
     ...user,
     application_roles_agreement: (user.application_roles_agreement || []).map(
-      (role) => (role === "BasicAgreementAccess" ? "Analyst" : role)
+      (role) => (role === 'BasicAgreementAccess' ? 'Analyst' : role),
     ),
   };
 }
 
 export function calculateUserStatus(user: RawUser): User {
   const enabled_overall = user.enabled_agreement && user.enabled_global;
-  const is_analyst = user.application_roles_agreement?.includes("Analyst");
+  const is_analyst = user.application_roles_agreement?.includes('Analyst');
   const done_induction = user.induction.passed;
   let calculated_status;
   if (!enabled_overall) {
-    calculated_status = "Deactivated";
+    calculated_status = 'Deactivated';
   } else if (!is_analyst) {
-    calculated_status = "Activated";
+    calculated_status = 'Activated';
   } else if (!done_induction) {
-    calculated_status = "Pending Induction";
+    calculated_status = 'Pending Induction';
   } else {
-    calculated_status = "Activated";
+    calculated_status = 'Activated';
   }
   return {
     ...user,

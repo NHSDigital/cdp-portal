@@ -6,7 +6,7 @@ locals {
 variable "name" { type = string }
 variable "zip_file_path" { type = string }
 variable "timeout" { default = 3 }
-variable "runtime" { default = "python3.9" }
+variable "runtime" { default = "python3.13" }
 variable "memory_size" { default = "512" }
 variable "env_vars" {
   type    = map(string)
