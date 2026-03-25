@@ -24,7 +24,7 @@ variable "handler" {
 
 variable "runtime_version" {
   type    = string
-  default = "syn-python-selenium-4.1"
+  default = "syn-python-selenium-7.0"
 }
 
 variable "zip_file" {

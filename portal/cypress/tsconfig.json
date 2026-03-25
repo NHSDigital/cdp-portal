@@ -1,0 +1,22 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "noEmit": true,
+    "isolatedModules": false,
+    "jsx": "react-jsx",
+    "types": ["cypress", "node", "react"],
+    "rootDir": "../",
+    "baseUrl": "../",
+    "paths": {
+      "@/*": ["*"]
+    }
+  },
+  "include": [
+    "../cypress/**/*.ts",
+    "../cypress/**/*.tsx",
+    "../cypress.setup.ts",
+    "../app/**/*.tsx",
+    "../app/**/*.ts"
+  ]
+}

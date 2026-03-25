@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { Session } from "next-auth";
-import { SessionProvider, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
-import { useLogoutIfSessionExpires } from "../../components/BasePage";
+import { useRouter } from 'next/navigation';
+import { Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
+import React from 'react';
+
+import { useLogoutIfSessionExpires } from '../../components/BasePage';
 
 interface Props {
   children: React.ReactNode;

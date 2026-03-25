@@ -7,8 +7,28 @@ resource "aws_wafv2_web_acl" "portal" {
   }
 
   rule {
-    name     = "${var.environment_prefix}non-gb"
+    name     = "${var.environment_prefix}ip-allowlist"
     priority = 1
+
+    action {
+      allow {}
+    }
+    statement {
+      ip_set_reference_statement {
+        arn = aws_wafv2_ip_set.portal_waf_ip_set_allowlist.arn
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "${var.environment_prefix}ip-allowlist"
+      sampled_requests_enabled   = false
+    }
+  }
+
+  rule {
+    name     = "${var.environment_prefix}non-gb"
+    priority = 2
 
     action {
       allow {}
@@ -28,7 +48,7 @@ resource "aws_wafv2_web_acl" "portal" {
 
   rule {
     name     = "${var.environment_prefix}ddos-protection"
-    priority = 2
+    priority = 3
 
     action {
       block {}
@@ -48,7 +68,7 @@ resource "aws_wafv2_web_acl" "portal" {
 
   rule {
     name     = "${var.environment_prefix}bot-control"
-    priority = 3
+    priority = 4
 
     override_action {
       none {}
@@ -87,4 +107,12 @@ module "portal_waf" {
 resource "aws_wafv2_web_acl_logging_configuration" "portal" {
   log_destination_configs = [module.portal_waf.log_group_arn]
   resource_arn            = aws_wafv2_web_acl.portal.arn
+}
+
+resource "aws_wafv2_ip_set" "portal_waf_ip_set_allowlist" {
+  name               = "${var.environment_prefix}ip-set-allowlist"
+  description        = "IP Set to be allowed"
+  scope              = "REGIONAL"
+  ip_address_version = "IPV4"
+  addresses          = var.portal_waf_ip_set_allowlist
 }

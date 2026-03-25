@@ -1,39 +1,56 @@
-"use client";
+'use client';
 
-import React from "react";
-import TextInputField from "app/shared/textInputField";
-import SubmitButton from "app/shared/submitButton";
-import { invokeSetUpPassword, invokeSetUpPasswordType } from "./serverActions";
-import { useFormState } from "react-dom";
-import ErrorSummary from "app/shared/errorSummary";
+import ErrorSummary from 'app/shared/errorSummary';
+import SubmitButton from 'app/shared/submitButton';
+import TextInputField from 'app/shared/textInputField';
+import { useActionState, useEffect } from 'react';
+
+import { WhiteLabelEntry } from '@/config/whiteLabel';
+
+import { invokeSetUpPassword, invokeSetUpPasswordType } from './serverActions';
 
 const initialFormState: invokeSetUpPasswordType = {};
 
-export default function SetUpPasswordContent() {
-  const [formState, formAction] = useFormState(
+export default function SetUpPasswordContent({
+  user_email,
+  guid,
+  whiteLabelValues,
+}: {
+  user_email: string;
+  guid: string;
+  whiteLabelValues: WhiteLabelEntry;
+}) {
+  const [formState, formAction] = useActionState(
     invokeSetUpPassword,
-    initialFormState
+    initialFormState,
   );
+
+  useEffect(() => {
+    document.getElementById('error-summary')?.focus();
+  }, [formState.errors]);
 
   return (
     <>
       <ErrorSummary
         errors={[
           {
-            input_id: "enter_password-input",
+            input_id: 'enter_password-input',
             errors_list: formState.errors?.enter_password,
           },
           {
-            input_id: "confirm_password-input",
+            input_id: 'confirm_password-input',
             errors_list: formState.errors?.confirm_password,
           },
         ]}
       />
       <h1>Set up password</h1>
-      <p>Once you set your password you can sign into the SDE portal.</p>
+      <p>
+        Once you set your password you can sign into the{' '}
+        {whiteLabelValues.acronym} portal.
+      </p>
       <p>Your password must:</p>
       <ul>
-        <li>have 12 characters or more</li>
+        <li>have 14 characters or more</li>
         <li>have at least one lowercase and one uppercase letter </li>
         <li>have at least one number </li>
         <li>have at least one special character such as ?!@” </li>
@@ -45,17 +62,19 @@ export default function SetUpPasswordContent() {
       </ul>
       <form action={formAction}>
         <TextInputField
-          label="Enter password"
-          name="enter_password"
+          label='Enter password'
+          name='enter_password'
           errors={formState.errors?.enter_password}
           isPassword={true}
         />
         <TextInputField
-          label="Confirm password"
-          name="confirm_password"
+          label='Confirm password'
+          name='confirm_password'
           errors={formState.errors?.confirm_password}
           isPassword={true}
         />
+        <input type='hidden' name='user_email' value={user_email} />
+        <input type='hidden' name='guid' value={guid} />
         <SubmitButton>Continue</SubmitButton>
       </form>
     </>

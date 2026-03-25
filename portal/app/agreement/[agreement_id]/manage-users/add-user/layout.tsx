@@ -1,32 +1,37 @@
-import React from "react";
-import hasPermissions from "../../../../services/hasPermissions";
-import Page403 from "../../../../403";
-import { ADDING_USER_PERMISSIONS_REQUIRED } from "../consts";
-import { getServerSessionErrorIfMissingProperties } from "app/shared/common";
-import { getLogger } from "helpers/logging/logger";
+import { getServerSessionErrorIfMissingProperties } from 'app/shared/common';
+import { getLogger } from 'helpers/logging/logger';
+import { redirect } from 'next/navigation';
+import React from 'react';
 
-const rootLogger = getLogger("addUserLayout");
+import hasPermissions from '@/app/services/hasPermissions';
+import { Actions } from '@/config/constants';
+
+const rootLogger = getLogger('addUserLayout');
 
 interface AddUserLayoutProps {
   children: React.ReactNode;
-  params: { agreement_id: string };
+  params: Promise<{ agreement_id: string }>;
 }
 
 export default async function AddUserLayout({
   children,
   params,
 }: AddUserLayoutProps) {
-  const { agreement_id } = params;
+  const { agreement_id } = await params;
 
   const session = await getServerSessionErrorIfMissingProperties(rootLogger);
   const user_email = session.user.email;
-  let userHasPermission;
-  userHasPermission = await hasPermissions({
-    permissions_required: ADDING_USER_PERMISSIONS_REQUIRED,
+
+  const userHasPermission = await hasPermissions({
+    permissions_required: Actions.ADD_NEW_USER,
     agreement_id: agreement_id,
     user_email: user_email,
-    target_user: "NOT_YET_KNOWN", // special value check for permission before the user email we're trying to add has been input
+    target_user: 'NOT_YET_KNOWN', // special value check for permission before the user email we're trying to add has been input
   });
 
-  return userHasPermission ? <>{children}</> : <Page403 />;
+  if (!userHasPermission) {
+    redirect('/403');
+  }
+
+  return <>{children}</>;
 }

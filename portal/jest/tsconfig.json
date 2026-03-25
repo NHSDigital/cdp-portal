@@ -1,0 +1,24 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "noEmit": true,
+    "isolatedModules": false,
+    "jsx": "react-jsx",
+    "types": ["jest", "node", "react"],
+    "rootDir": "../",
+    "baseUrl": "../",
+    "paths": {
+      "@/*": ["*"]
+    }
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx",
+    "./*.ts",
+    "./*.tsx",
+    "./jest.setup.ts",
+    "../app/**/*.ts",
+    "../app/**/*.tsx"
+  ]
+}
