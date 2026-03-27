@@ -26,7 +26,8 @@ data "aws_iam_policy_document" "alb_logging_access" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "logging_billing" {
-  bucket = module.log_delivery.name
+  bucket                                 = module.log_delivery.name
+  transition_default_minimum_object_size = "varies_by_storage_class"
 
   rule {
     # There is a minimum object charge for objects smaller than 128KB in the IA storage class
@@ -63,7 +64,7 @@ resource "aws_s3_bucket_ownership_controls" "log_delivery" {
 }
 
 module "audit_logs_to_cloudwatch" {
-  source = "../../../submodules/s3_to_cloudwatch_lambda/terraform"
+  source = "../../../submodules/s3_to_cloudwatch_lambda_with_log_group/terraform"
 
   trigger_type           = "EVENT"
   resource_name_prefix   = "portal-audit-logs"

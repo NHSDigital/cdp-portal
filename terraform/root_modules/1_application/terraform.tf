@@ -1,26 +1,23 @@
 provider "aws" {
   region = "eu-west-2"
   default_tags {
-    tags = {
-      repo      = local.repo
-      Service   = "Data Refinery"
-      Component = "Portal"
-      Owner     = "Platform Team"
-      P-Env     = var.environment
-      Role      = local.root_module
-      Workload  = "Platform"
-    }
+    tags = local.default_tags
   }
 }
 
 terraform {
+  required_providers {
+    aws = {
+      version = "~> 6.0, != 6.14.0"
+    }
+  }
   backend "s3" {
     key     = "portal-base.tfstate"
     region  = "eu-west-2"
     encrypt = true
   }
 
-  required_version = "~> 1.10"
+  required_version = "~> 1.12"
 }
 
 data "aws_caller_identity" "current" {}

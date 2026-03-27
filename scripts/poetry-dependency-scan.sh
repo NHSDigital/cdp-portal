@@ -24,8 +24,7 @@ BANNER
 
   echo "Scanning dependency graph"
   # Checks against https://github.com/pyupio/safety-db which is updated once per month
-  vulns=`cat ../../../pipmoduleignore.txt`
-  poetry run safety check --full-report $vulns
+  poetry run safety check --policy-file "$INITIAL_DIR/.safety-policy.yml"
 done
 
 

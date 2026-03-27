@@ -1,18 +1,27 @@
-import { Metadata } from "next";
-import BackLink from "app/shared/backLink";
-import Link from "next/link";
-import { WhatDoTheseStatusesMean } from "app/shared/statusTags";
-import { getLogger } from "helpers/logging/logger";
-import { cookies } from "next/headers";
-import SuccessBanner from "../../successBanner";
-import UserDescriptionList from "./userDescriptionList";
-import getAgreementUserDetails from "app/services/getAgreementUserDetails";
+import getAgreementUserDetails from 'app/services/getAgreementUserDetails';
+import BackLink from 'app/shared/backLink';
+import { getLogger } from 'helpers/logging/logger';
+import { Metadata } from 'next';
+import dynamic from 'next/dynamic';
+import { cookies } from 'next/headers';
 
-const logger = getLogger("userDetailsPage");
+import { WhatDoTheseStatusesMean } from '@/app/_components/status-tags/StatusTags';
+import { CookieNames, NATIONAL_SERVICE_DESK_EMAIL } from '@/config/constants';
+import { getWhiteLabelValues } from '@/config/whiteLabel';
 
-export const metadata: Metadata = {
-  title: "User details",
-};
+import UserDescriptionList from './_components/UserDescriptionList';
+
+const logger = getLogger('userDetailsPage');
+const SuccessBanner = dynamic(() => import('@/app/_components/SuccessBanner'), {
+  ssr: false,
+});
+
+export async function generateMetadata(): Promise<Metadata> {
+  const whiteLabelValues = getWhiteLabelValues();
+  return {
+    title: `User details - ${whiteLabelValues.acronym}`,
+  };
+}
 
 interface ManageUsersPageProps {
   params: { agreement_id: string; user: string };
@@ -25,19 +34,23 @@ export default async function userDetailsPage({
 
   const user_decoded = decodeURIComponent(user);
 
-  logger.info("Retrieveing agreement user details");
+  logger.info('Retrieveing agreement user details');
   const user_details = await getAgreementUserDetails(
     agreement_id,
-    user_decoded
+    user_decoded,
   );
 
   const users_full_name = `${user_details.first_name} ${user_details.last_name}`;
 
-  const success_cookie = cookies().get("manage_users_success_message");
+  const success_cookie = cookies().get(
+    CookieNames.MANAGE_USERS_SUCCESS_MESSAGE,
+  );
+
+  const whiteLabelValues = getWhiteLabelValues();
 
   return (
     <div>
-      <BackLink href=".." />
+      <BackLink href='..' />
       <h1>{users_full_name}</h1>
       <div>
         {success_cookie && (
@@ -45,20 +58,24 @@ export default async function userDetailsPage({
         )}
       </div>
       <p>
-        To update this user&apos;s name or email address, contact support at{" "}
-        <a href="mailto:ssd.nationalservicedesk@nhs.net" target="_blank">
-          ssd.nationalservicedesk@nhs.net
+        To update this user&apos;s name or email address, contact support at{' '}
+        <a
+          href={`mailto:${NATIONAL_SERVICE_DESK_EMAIL}`}
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          {NATIONAL_SERVICE_DESK_EMAIL}
         </a>
         .
       </p>
 
       <UserDescriptionList
         agreement_id={agreement_id}
-        user={user}
         user_details={user_details}
+        whiteLabelKey={whiteLabelValues.acronym}
       />
 
-      <WhatDoTheseStatusesMean />
+      <WhatDoTheseStatusesMean whiteLabelKey={whiteLabelValues.acronym} />
     </div>
   );
 }

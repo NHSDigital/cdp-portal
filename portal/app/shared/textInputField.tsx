@@ -14,7 +14,7 @@ export default function TextInputField({
   hint,
   errors,
   value,
-  width = "nhsuk-input--width-20",
+  width = 'nhsuk-input--width-20',
   isPassword = false,
 }: TextInputFieldProps) {
   const text_input_id = name;
@@ -26,23 +26,23 @@ export default function TextInputField({
     const error_id = `${text_input_id}-error-${index}`;
     error_ids.push(error_id);
     errors_to_display.push(
-      <span className="nhsuk-error-message" key={error_id} id={error_id}>
-        <span className="nhsuk-u-visually-hidden">Error:</span>
+      <span className='nhsuk-error-message' key={error_id} id={error_id}>
+        <span className='nhsuk-u-visually-hidden'>Error:</span>
         {error}
-      </span>
+      </span>,
     );
   });
 
   return (
     <div
       className={
-        errors ? "nhsuk-form-group nhsuk-form-group--error" : "nhsuk-form-group"
+        errors ? 'nhsuk-form-group nhsuk-form-group--error' : 'nhsuk-form-group'
       }
     >
       <label
-        className="nhsuk-label"
-        htmlFor={text_input_id + "-input"}
-        id={text_input_id + "-label"}
+        className='nhsuk-label'
+        htmlFor={text_input_id + '-input'}
+        id={text_input_id + '-label'}
       >
         {label}
       </label>
@@ -50,7 +50,7 @@ export default function TextInputField({
       {errors_to_display}
 
       {hint && (
-        <div className="nhsuk-hint" id={text_input_id + "-hint"}>
+        <div className='nhsuk-hint' id={text_input_id + '-hint'}>
           {hint}
         </div>
       )}
@@ -60,12 +60,12 @@ export default function TextInputField({
             ? `nhsuk-input ${width} nhsuk-input--error`
             : `nhsuk-input ${width}`
         }
-        type={isPassword ? "password" : "text"}
+        type={isPassword ? 'password' : 'text'}
         name={name}
         defaultValue={value}
-        id={text_input_id + "-input"}
-        aria-labelledby={text_input_id + "-label"}
-        aria-describedby={errors ? error_ids.join(" ") : undefined}
+        id={text_input_id + '-input'}
+        aria-labelledby={text_input_id + '-label'}
+        aria-describedby={errors ? error_ids.join(' ') : undefined}
       />
     </div>
   );

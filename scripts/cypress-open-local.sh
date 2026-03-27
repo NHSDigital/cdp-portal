@@ -1,4 +1,4 @@
-# /bin/bash
+#!/bin/bash
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 . "$SCRIPT_DIR/variables.sh"
 set -eu
@@ -15,5 +15,6 @@ export CYPRESS_MAINTAINER_TEST_CREDENTIALS=$( AWS_PROFILE=identity_${BUILD_ENV} 
 export CYPRESS_BUILD_ENV=local
 export CYPRESS_BASE_URL=http://localhost:3000
 export CYPRESS_KEYCLOAK_HOSTNAME=$keycloak_dev_url
+export CYPRESS_PORTAL_SERVICE="${PORTAL_SERVICE}"
 
 npx cypress open

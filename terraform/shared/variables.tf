@@ -51,7 +51,12 @@ variable "access_s3_kms_key_id" {
 
 variable "sso_admin_role_names" {
   type        = list(string)
-  description = "The names of the SSO roles to give KMS admin to, like 'Admin' or 'datarefinery_developer'"
+  description = "The names of the SSO roles to give KMS admin to, like 'datarefinery_admin' or 'datarefinery_developer'"
+}
+
+variable "sso_read_only_role_names" {
+  type        = list(string)
+  description = "The names of the SSO roles to give KMS Read only roles to, like 'datarefinery_triage' or 'datarefinery_readonly"
 }
 
 variable "permissions_api_gateway_id" {
@@ -67,6 +72,15 @@ variable "env_portal_subdomain_name" {
   default = ""
 }
 
+variable "env_cdp_portal_subdomain_name" {
+  default = ""
+}
+
+variable "cdp_portal_hosted_zone_id" {
+  default = ""
+}
+
+
 variable "ses_domain_identity_arn" {
   default = ""
 }
@@ -79,8 +93,14 @@ variable "ecr_replication_destination" {
   default = false
 }
 
-variable "maintenance_mode" {
-  description = "Enable or disable maintenance mode for the portal"
+variable "sde_maintenance_mode" {
+  description = "Enable or disable maintenance mode for the SDE portal"
+  type        = bool
+  default     = false
+}
+
+variable "cdp_maintenance_mode" {
+  description = "Enable or disable maintenance mode for the CDP portal"
   type        = bool
   default     = false
 }
@@ -93,4 +113,10 @@ variable "keycloak_url" {
 variable "log_delivery_bucket_name" {
   type        = string
   description = "Bucket name for where logs will be stored"
+}
+
+variable "max_upload_file_size_in_bytes" {
+  description = "Maximum file upload size allowed (in bytes)"
+  type        = number
+  default     = 1048576 # 1MB default
 }

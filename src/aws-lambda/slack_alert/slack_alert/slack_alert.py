@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, UTC
 from json import JSONDecodeError
 from typing import Dict, Any
 
@@ -146,7 +146,7 @@ def create_message_content(sns_message):
     ]
     for event in events[::-1][:3]:  # Get the latest 3 events
         timestamp = event.get("timestamp")
-        timestamp = datetime.utcfromtimestamp(timestamp / 1000).isoformat()
+        timestamp = datetime.fromtimestamp(timestamp / 1000, UTC).isoformat()
         content += [
             {"type": "divider"},
             create_markdown_text_section(f"*Timestamp:* {timestamp}"),

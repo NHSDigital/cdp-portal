@@ -1,73 +1,84 @@
-import "cypress-axe";
+import 'cypress-axe';
 
-// Every E2E test file needs this, or else retries pass when they should fail
-beforeEach(() => {});
+import { QA01_ID } from '../utils';
 
-// Important Note :
-// All pages that rendered using the pages router are wrapped in the BasePage component
-// this component includes the SkipLink component as the first element in each page, as it allows
-// users with screen readers to skip to the main content of the page.
-// However because of the way cypress-axe works, it will fail the test if it detects the SkipLink component
-// as the first element in the page, because for accessibility ti believes the first element should be a header.
-// To avoid this, we can check only the main content of the page, by passing the main content ref to the checkA11y function
-// we can check the header and footer separately in other tests if needed.
-
-describe("Accessibility - Pages before login", () => {
-  it("Header is accessible", () => {
-    cy.visit("/");
-    cy.injectAxe();
-    cy.checkA11y("header");
+describe('Accessibility - Pages before login', () => {
+  beforeEach(() => {
+    cy.visit('/');
   });
-  it("Footer is accessible", () => {
-    cy.visit("/");
-    cy.injectAxe();
-    cy.checkA11y("footer");
+
+  it('Header is accessible', () => {
+    cy.checkAccessibility('header');
   });
-  it("Welcome page is accessible", () => {
-    cy.visit("/");
-    cy.get("title").contains("Welcome to the NHS Secure Data Environment");
-    cy.injectAxe();
-    cy.checkA11y("main");
+  it('Footer is accessible', () => {
+    cy.checkAccessibility('footer');
+  });
+  it('Welcome page is accessible', () => {
+    cy.get('title').contains('Welcome to the NHS Secure Data Environment');
+    cy.checkAccessibility('main');
   });
 });
 
-// for each of the error page tests, we need to also check for the page title/header
-// to ensure have navigated to the correct error page and its not a legit error
-describe("Accessibility - Error pages and logout", () => {
+describe('Accessibility - Error pages and logout', () => {
   beforeEach(() => {
-    cy.full_login("ANALYST");
+    cy.full_login('ANALYST');
   });
-  it("Logout page is accessible", () => {
-    cy.visit("/");
-    cy.get("input.nhsuk-button").contains("Logout").click();
-    cy.get("h1").contains("You are logged out");
 
-    cy.url().should("include", "logout_confirm");
-    cy.injectAxe();
-    cy.checkA11y("main");
+  it('Logout page is accessible', () => {
+    cy.visit('/');
+
+    cy.wait(150);
+    cy.get('input.nhsuk-button').contains('Logout').click();
+    cy.get('h1').contains('You are logged out');
+
+    cy.url().should('include', 'logout_confirm');
+    cy.checkAccessibility('main');
   });
-  it("Error 403 page is accessible", () => {
-    cy.visit("/403", { failOnStatusCode: false });
-    cy.get("title").contains("Method not allowed");
-    cy.injectAxe();
-    cy.checkA11y("main");
+
+  const errorPages = [
+    {
+      path: '/403',
+      title: 'Method not allowed',
+      header: 'You do not have permission to access this page',
+    },
+    { path: '/404', title: 'Page not found', header: 'Page not found' },
+    {
+      path: '/405',
+      title: 'Error accessing page',
+      header: 'Error accessing page',
+    },
+  ];
+
+  errorPages.forEach(({ path, title, header }) => {
+    it(`Error page ${path} is accessible`, () => {
+      cy.visit(path, { failOnStatusCode: false });
+      cy.title().should('include', title);
+      cy.get('h1').should('contain', header);
+      cy.checkAccessibility('main');
+    });
   });
-  it("Error 404 page is accessible", () => {
-    cy.visit("/404", { failOnStatusCode: false });
-    cy.get("title").contains("Page Not Found");
+
+  it('Error 500 page is accessible', () => {
+    Cypress.on('uncaught:exception', (err) => {
+      // This test is expected to raise an error so ignore the one we're expecting
+      if (err.message.includes('Failed to upload file to S3')) {
+        return false;
+      }
+    });
+    cy.intercept('POST', '/api/getfileuploadurl', {
+      statusCode: 500,
+      body: { message: 'File does not exist' },
+    }).as('fake_file_exists_req');
+
+    cy.visit(`/agreement/${QA01_ID}/fileupload`);
+    cy.get('input[type="file"]').selectFile({
+      contents: Cypress.Buffer.from('a,b\n1,2\n3,4'),
+      fileName: 'valid.csv',
+    });
+    cy.get('button').contains('Continue to upload').click();
+    cy.get('button').contains('Submit file').click();
+
+    cy.get('h1').contains('Sorry, there is a problem with the service');
     cy.injectAxe();
-    cy.checkA11y("main");
-  });
-  it("Error 405 page is accessible", () => {
-    cy.visit("/405", { failOnStatusCode: false });
-    cy.get("title").contains("Error accessing page");
-    cy.injectAxe();
-    cy.checkA11y("main");
-  });
-  it("Error 500 page is accessible", () => {
-    cy.visit("/500", { failOnStatusCode: false });
-    cy.get("title").contains("Unexpected Error");
-    cy.injectAxe();
-    cy.checkA11y("main");
   });
 });

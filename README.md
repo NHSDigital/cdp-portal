@@ -72,13 +72,13 @@ pre-commit install
 1. **Create an S3 bucket and DynamoDB table for your terraform state**
 
     The bucket and the table must have the same name. There should be one bucket & table for each environment.
-    Once these are created, replace them in the `init` and `init-upgrade` targets in the makefile.
+    Once these are created, replace them in the `tf-init` and `tf-init-upgrade` targets in the makefile.
 
 2. **Setup Git Submodules**
 
    In terminal `cd` into the root of the repo and run the following commands:
 
-   `git submodule add https://github.com/NHSDigital/cdp-tf-module-s3-to-cloudwatch-lambda.git submodules/s3_to_cloudwatch_lambda`
+   `git submodule add https://github.com/NHSDigital/cdp-tf-s3-to-cloudwatch-lambda-with-log-group.git submodules/s3_to_cloudwatch_lambda_with_log_group`
 
    `git submodule add https://github.com/NHSDigital/cdp-tf-module-s3-bucket.git submodules/s3_bucket`
 
@@ -96,15 +96,13 @@ pre-commit install
     | portal/app/induction/page.tsx                                                       |
     | portal/app/maintenance/page.tsx                                                     |
     | portal/app/403.tsx                                                                  |
+    | portal/app/405.tsx                                                                  |
     | portal/app/error.tsx                                                                |
     | portal/app/global-error.tsx                                                         |
     | portal/app/not-found.tsx                                                            |
+    | portal/app/welcome.tsx                                                              |
     | portal/pages/agreement/[agreement_id]/fileupload.tsx                                |
     | portal/pages/agreement/[agreement_id]/fileuploadsuccess.tsx                         |
-    | portal/pages/404.tsx                                                                |
-    | portal/pages/405.tsx                                                                |
-    | portal/pages/500.tsx                                                                |
-    | portal/pages/welcome.tsx                                                            |
     | src/aws-lambda/data_in_forwarder/data_in_forwarder/templates/failure.html           |
     | src/aws-lambda/data_in_forwarder/data_in_forwarder/templates/success.html           |
     | src/aws-lambda/data_in_forwarder/data_in_forwarder/data_in_forwarder.py             |
@@ -144,5 +142,5 @@ pre-commit install
     - Set the env var `AWS_PROFILE` to the correct profile for the account you're deploying to
     - Set the env var `BUILD_ENV` to your build environment (dev, test, int, prod, etc)
     - Our terraform is split into layers, you can find the names of the layers by looking in [the root modules folder](./terraform/root_modules/) at the subfolder names (each subfolder is one layer). You can set the environment variable `MODULE` to the layer name to choose which layer to work with. You will need to do the plan/deploy steps mentioned below for each layer separately, deploying lower layers first.
-    - You can run `make plan` once all the env vars are set to do a terraform plan
-    - You can run `make deploy` to do a terraform deploy
+    - You can run `make tf-plan` once all the env vars are set to do a terraform plan
+    - You can run `make tf-deploy` to do a terraform deploy

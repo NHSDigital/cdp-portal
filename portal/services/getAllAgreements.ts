@@ -1,15 +1,18 @@
-import { getLogger } from "../helpers/logging/logger";
-import callLambdaWithFullErrorChecking from "app/shared/callLambda";
-import { Agreement } from "./getUserAgreements";
+import callLambdaWithFullErrorChecking from 'app/shared/callLambda';
 
-const logger = getLogger("getUserAgreements");
+import { getLogger } from '../helpers/logging/logger';
+import { Agreement } from './getUserAgreements';
 
-export default async function getAllAgreements(): Promise<Agreement[]> {
+const logger = getLogger('getUserAgreements');
+
+export default async function getAllAgreements(
+  eventfilter = 'agreement-',
+): Promise<Agreement[]> {
   const filterEvent = {
     filter: {
-      attribute: "PK",
-      condition: "begins_with",
-      value: "agreement-dsa-",
+      attribute: 'PK',
+      condition: 'begins_with',
+      value: eventfilter,
     },
   };
 

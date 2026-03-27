@@ -1,6 +1,6 @@
 locals {
   access_import_data_pending_bucket_arn = "arn:aws:s3:::${local.access_import_data_pending_bucket_name}"
-  source_email_address                  = "noreply@${local.portal_full_domain_name}"
+  source_email_address                  = local.dev_envs ? "noreply@portal.${local.portal_hosted_zone_name}" : "noreply@${local.portal_full_domain_name}"
   access_s3_kms_key_arn                 = "arn:aws:kms:eu-west-2:${var.dare_access_account_id}:key/${var.access_s3_kms_key_id}"
 }
 
@@ -14,12 +14,15 @@ module "data_in_forwarder_lambda" {
   dare_management_account_id = var.dare_management_account_id
   sns_alert_topic            = aws_sns_topic.slack_alert_topic_errors.arn
   environment                = var.environment
+  timeout                    = var.max_upload_file_size_in_bytes > 1048576 ? 600 : 3 # seconds
 
   env_vars = {
     IMPORT_DATA_PENDING_BUCKET_NAME  = local.access_import_data_pending_bucket_name
     IMPORT_DATA_REJECTED_BUCKET_NAME = module.data_in_validation_rejected.id
     SOURCE_EMAIL_ADDRESS             = local.source_email_address
-    MAX_DATA_SIZE_IN_BYTES           = "1048576"
+    MAX_DATA_SIZE_IN_BYTES           = var.max_upload_file_size_in_bytes
+    MAX_ROWS                         = "1048576"
+    MAX_COLUMNS                      = "16384"
   }
 }
 

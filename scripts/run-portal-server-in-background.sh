@@ -4,6 +4,8 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 set -e
 set -eu
 MAINTENANCE_ENABLED=$1
+
+echo "PORTAL_SERVICE is set to: ${PORTAL_SERVICE}"
 # retrieve keycloak and nextauth secrets
 export KEYCLOAK_SECRET=$( AWS_PROFILE=portal_dev aws secretsmanager get-secret-value --secret-id ${keycloak_portal_client_secret} | jq -r .SecretString)
 export NEXTAUTH_SECRET=$( AWS_PROFILE=portal_dev aws secretsmanager get-secret-value --secret-id ${nextauth_encryption_secret} | jq -r .SecretString)

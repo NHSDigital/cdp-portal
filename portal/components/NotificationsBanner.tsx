@@ -1,5 +1,5 @@
-import React from "react";
-import Markdown from "markdown-to-jsx";
+import Markdown from 'markdown-to-jsx';
+import React from 'react';
 
 interface Props {
   notification: string;
@@ -10,7 +10,7 @@ export default function NotificationBanner({ notification, colour }: Props) {
   return (
     <div
       className={`notification notification-${colour} }`}
-      role="notification"
+      role='notification'
     >
       <Markdown>{notification}</Markdown>
     </div>

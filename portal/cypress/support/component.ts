@@ -1,13 +1,12 @@
 // Import commands.js using ES2015 syntax:
-import "./commands";
+import './commands';
+import '../../styles/nhsuk-6.2.0.min.css';
+import '../../styles/style.css';
+import '../../styles/NotificationBanner.css';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
-
-import { mount } from "cypress/react18";
-import "../../styles/nhsuk-6.2.0.min.css";
-import "../../styles/style.css";
-import "../../styles/NotificationBanner.css";
+import { mount } from 'cypress/react18';
 
 // Augment the Cypress namespace to include type definitions for
 // your custom command.
@@ -21,4 +20,4 @@ declare global {
   }
 }
 
-Cypress.Commands.add("mount", mount);
+Cypress.Commands.add('mount', mount);

@@ -1,7 +1,9 @@
-import { getServerSession } from "next-auth";
-import LogoutButton from "./logoutButton";
+'use server';
 
-import layoutStyles from "./layout.module.css";
+import { getServerSession } from 'next-auth';
+
+import layoutStyles from './layout.module.css';
+import LogoutButton from './logoutButton';
 
 export default async function UserDetails() {
   const session = await getServerSession();

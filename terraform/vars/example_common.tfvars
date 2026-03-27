@@ -5,7 +5,8 @@
 
 environment                    = "example_environment"
 admin_roles                    = ["ExampleAdminRole", "ExampleDeploymentRole", "ExampleDeveloper"]
-sso_admin_role_names           = ["Admin", "datarefinery_developer"]
+sso_admin_role_names           = ["datarefinery_admin", "datarefinery_developer", "datarefinery_tester"]
+sso_read_only_role_names       = ["datarefinery_readonly"]
 cidr_range                     = "192.168.30.0/18"
 dare_management_account_id     = "example_aws_account_id"
 dare_orchestration_account_id  = "example_aws_account_id"

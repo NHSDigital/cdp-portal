@@ -15,23 +15,23 @@ const cspHeader = `
 `;
 
 module.exports = {
-  output: "standalone",
+  output: 'standalone',
   async headers() {
     return [
       {
-        source: "/(.*)",
+        source: '/(.*)',
         headers: [
           {
-            key: "Content-Security-Policy",
-            value: cspHeader.replace(/\n/g, ""),
+            key: 'Content-Security-Policy',
+            value: cspHeader.replace(/\n/g, ''),
           },
           {
-            key: "X-Frame-Options",
-            value: "SAMEORIGIN",
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
           },
           {
-            key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
           },
         ],
       },

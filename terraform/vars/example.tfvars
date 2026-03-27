@@ -1,6 +1,7 @@
 environment                    = "example_environment"                            # Replace with your environment name (dev, int, test, prod)
 admin_roles                    = ["ExampleRole1", "ExampleRole2", "ExampleRole3"] # Example roles
-sso_admin_role_names           = ["ExampleRole1", "ExampleRole2", "ExampleRole3"] # Example roles
+sso_admin_role_names           = ["ExampleRole1", "ExampleRole2", "ExampleRole3"]
+sso_read_only_role_names       = ["ExampleReadOnlyRole"] # Example roles
 cidr_range                     = "172.20.192.0/18"
 dare_management_account_id     = "123456789012"                                        # Example account, replace with your mgmt account                gitsecrets:ignore - example file
 dare_orchestration_account_id  = "123456789012"                                        # Example account, replace with your orchestration account       gitsecrets:ignore - example file

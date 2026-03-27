@@ -1,5 +1,5 @@
-import React from "react";
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
+import React from 'react';
 
 interface MaintenanceLayoutProps {
   children: React.ReactNode;
@@ -8,8 +8,8 @@ interface MaintenanceLayoutProps {
 export default async function MaintenanceLayout({
   children,
 }: MaintenanceLayoutProps) {
-  if (process.env.MAINTENANCE_MODE != "true") {
-    redirect("/");
+  if (process.env.MAINTENANCE_MODE != 'true') {
+    redirect('/');
   }
   return <>{children}</>;
 }
