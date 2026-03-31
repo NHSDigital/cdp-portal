@@ -4,10 +4,10 @@ import json
 
 import boto3
 
-from moto import mock_dynamodb
+from moto import mock_aws
 
 
-@mock_dynamodb
+@mock_aws
 def create_mock_dynamodb_table():
     ddb_client = boto3.client("dynamodb", region_name="eu-west-2")
 

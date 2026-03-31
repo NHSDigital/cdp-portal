@@ -1,5 +1,5 @@
 import pytest
-from moto import mock_dynamodb
+from moto import mock_aws
 import boto3
 from boto3.dynamodb.types import TypeDeserializer
 import add_weekly_banner.add_weekly_banner as main
@@ -23,7 +23,7 @@ class LambdaContext:
 
 @pytest.fixture(autouse=True)
 def mock_dynamo_w_agreements_db():
-    with mock_dynamodb():
+    with mock_aws():
         boto3.client("dynamodb").create_table(
             TableName="Notices",
             KeySchema=[{"AttributeName": "noticeId", "KeyType": "HASH"}],
@@ -73,3 +73,39 @@ def test_lambda_handler_during_daylight_savings():
     assert datetime.fromtimestamp(
         int(generated_notice["expiryPeriod"]), timezone.utc
     ) == datetime(2024, 6, 26, 8, 0, tzinfo=timezone.utc)
+
+
+# Thursday prior to the clocks going forward in March
+@freeze_time("2025-03-27 03:00:00")
+def test_lambda_handler_during_march_clock_change():
+    main.lambda_handler({}, LambdaContext())
+
+    notices_scan = boto3.client("dynamodb").scan(TableName="Notices")
+
+    generated_notice = deserializer.deserialize({"M": notices_scan["Items"][0]})
+
+    assert datetime.fromtimestamp(
+        int(generated_notice["startPeriod"]), timezone.utc
+    ) == datetime(2025, 4, 2, 6, 0, tzinfo=timezone.utc)
+
+    assert datetime.fromtimestamp(
+        int(generated_notice["expiryPeriod"]), timezone.utc
+    ) == datetime(2025, 4, 2, 8, 0, tzinfo=timezone.utc)
+
+
+# Thursday prior to the clocks going back in October
+@freeze_time("2025-10-23 03:00:00")
+def test_lambda_handler_during_october_clock_change():
+    main.lambda_handler({}, LambdaContext())
+
+    notices_scan = boto3.client("dynamodb").scan(TableName="Notices")
+
+    generated_notice = deserializer.deserialize({"M": notices_scan["Items"][0]})
+
+    assert datetime.fromtimestamp(
+        int(generated_notice["startPeriod"]), timezone.utc
+    ) == datetime(2025, 10, 29, 7, 0, tzinfo=timezone.utc)
+
+    assert datetime.fromtimestamp(
+        int(generated_notice["expiryPeriod"]), timezone.utc
+    ) == datetime(2025, 10, 29, 9, 0, tzinfo=timezone.utc)

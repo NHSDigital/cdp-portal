@@ -1,4 +1,4 @@
-import queryPermissionsService from "./queryPermissionsService";
+import queryPermissionsService from '@/app/services/queryPermissionsService';
 
 interface hasPermissionProps {
   permissions_required: string[];
@@ -19,19 +19,19 @@ export default async function hasPermissions({
       action: permission,
       dsa: agreement_id,
       target_user: target_user,
-    })
+    }),
   );
 
   const permissionServiceResponses = await Promise.all(
-    permissionServicePromises
+    permissionServicePromises,
   );
 
   const hasPermission = permissionServiceResponses.every(
     (permissionServiceResponse) => {
       if (permissionServiceResponse.status !== 200) return false;
-      if (permissionServiceResponse.outcome === "deny") return false;
+      if (permissionServiceResponse.outcome === 'deny') return false;
       return true;
-    }
+    },
   );
 
   return hasPermission;

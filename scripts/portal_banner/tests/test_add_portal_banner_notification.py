@@ -1,6 +1,6 @@
 import json
 
-from moto import mock_dynamodb
+from moto import mock_aws
 from unittest.mock import patch, Mock
 from freezegun import freeze_time
 
@@ -17,7 +17,7 @@ class TestAddPortalBannerNotification:
     }
 
     @freeze_time("2023-06-15 09:30:00")
-    @mock_dynamodb
+    @mock_aws
     @patch(
         "portal_banner.get_notice_values.inquirer.prompt",
         Mock(return_value={"action": "Add banner to DynamoDB"}),
@@ -30,7 +30,7 @@ class TestAddPortalBannerNotification:
         assert response[0].get("notification").get("S") == "Test Notification"
 
     @freeze_time("2023-06-15 09:30:00")
-    @mock_dynamodb
+    @mock_aws
     @patch(
         "portal_banner.get_notice_values.inquirer.prompt",
         Mock(return_value={"action": "Skip this banner"}),
@@ -42,7 +42,7 @@ class TestAddPortalBannerNotification:
         assert len(response) == 0
 
     @freeze_time("2023-06-15 09:30:00")
-    @mock_dynamodb
+    @mock_aws
     @patch(
         "portal_banner.get_notice_values.inquirer.prompt",
         Mock(
@@ -61,7 +61,7 @@ class TestAddPortalBannerNotification:
         assert response[0].get("notification").get("S") == "Test Notification Two"
 
     @freeze_time("2023-06-15 09:30:00")
-    @mock_dynamodb
+    @mock_aws
     @patch(
         "portal_banner.get_notice_values.inquirer.prompt",
         Mock(
@@ -80,7 +80,7 @@ class TestAddPortalBannerNotification:
         assert response[0].get("colour").get("S") == "blue"
 
     @freeze_time("2023-06-15 09:30:00")
-    @mock_dynamodb
+    @mock_aws
     @patch(
         "portal_banner.get_notice_values.inquirer.prompt",
         Mock(
@@ -99,7 +99,7 @@ class TestAddPortalBannerNotification:
         assert response[0].get("startPeriod").get("N") == "1686830400"
 
     @freeze_time("2023-06-15 09:30:00")
-    @mock_dynamodb
+    @mock_aws
     @patch(
         "portal_banner.get_notice_values.inquirer.prompt",
         Mock(
@@ -177,7 +177,7 @@ class TestMain:
     }
 
     @freeze_time("2023-06-15 09:30:00")
-    @mock_dynamodb
+    @mock_aws
     @patch("portal_banner.clear_outputs.system", Mock(return_value=None))
     @patch(
         "portal_banner.get_notice_values.inquirer.prompt",
@@ -195,7 +195,7 @@ class TestMain:
         assert result == self.notice_output
 
     @freeze_time("2023-06-15 09:30:00")
-    @mock_dynamodb
+    @mock_aws
     @patch("portal_banner.clear_outputs.system", Mock(return_value=None))
     @patch(
         "portal_banner.get_notice_values.inquirer.prompt",
@@ -214,7 +214,7 @@ class TestMain:
         assert result == self.notice_output
 
     @freeze_time("2023-06-15 09:30:00")
-    @mock_dynamodb
+    @mock_aws
     @patch("portal_banner.clear_outputs.system", Mock(return_value=None))
     @patch(
         "portal_banner.get_notice_values.inquirer.prompt",
@@ -237,7 +237,7 @@ class TestMain:
         assert result == self.notice_output
 
     @freeze_time("2023-06-15 09:30:00")
-    @mock_dynamodb
+    @mock_aws
     @patch("portal_banner.clear_outputs.system", Mock(return_value=None))
     @patch(
         "portal_banner.get_notice_values.inquirer.prompt",

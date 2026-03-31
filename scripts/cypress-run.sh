@@ -1,7 +1,13 @@
-# /bin/bash
+#!/bin/bash
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 . "$SCRIPT_DIR/variables.sh"
 set -eu
+
+if [ "${PORTAL_SERVICE}" = "CDP" ]; then
+  SPEC="cypress/e2e_cdp/**/*.cy.ts"
+else
+  SPEC="cypress/e2e/**/*.cy.ts"
+fi
 
 cd portal
 
@@ -14,7 +20,9 @@ export CYPRESS_MAINTAINER_TEST_CREDENTIALS=$( AWS_PROFILE=identity_${BUILD_ENV} 
 export CYPRESS_BASE_URL="${CYPRESS_BASE_URL}"
 export CYPRESS_KEYCLOAK_HOSTNAME="${CYPRESS_KEYCLOAK_HOSTNAME}"
 export CYPRESS_BUILD_ENV="${BUILD_ENV}"
+export CYPRESS_PORTAL_SERVICE="${PORTAL_SERVICE}"
 
 echo "Cypress base URL is $CYPRESS_BASE_URL"
+echo "Service is ${PORTAL_SERVICE}"
 
-npx cypress run
+npx cypress run --spec "$SPEC"

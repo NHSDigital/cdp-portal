@@ -12,6 +12,27 @@ module "data_in_landing" {
   }
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "data_in_landing_bucket" {
+  bucket = module.data_in_landing.id
+  rule {
+    id     = "NoncurrentVersionExpirationRule"
+    status = "Enabled"
+    filter {
+    }
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+
+    expiration {
+      expired_object_delete_marker = true
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 30
+    }
+  }
+  depends_on = [module.data_in_landing]
+}
 resource "aws_s3_bucket_cors_configuration" "data_in_landing" {
   bucket = module.data_in_landing.id
 

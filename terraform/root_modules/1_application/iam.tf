@@ -1,5 +1,10 @@
-resource "aws_iam_role" "portal_execution" {
-  name               = "${var.environment_prefix}portal_execution"
+resource "aws_iam_role" "sde_portal_execution" {
+  name               = "${var.environment_prefix}sde_portal_execution"
+  assume_role_policy = data.aws_iam_policy_document.allow_ecs_to_assume.json
+}
+
+resource "aws_iam_role" "cdp_portal_execution" {
+  name               = "${var.environment_prefix}cdp_portal_execution"
   assume_role_policy = data.aws_iam_policy_document.allow_ecs_to_assume.json
 }
 
@@ -23,14 +28,24 @@ data "aws_iam_policy_document" "allow_ecs_to_assume" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "portal_ecs_task_execution" {
+resource "aws_iam_role_policy_attachment" "sde_portal_ecs_task_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-  role       = aws_iam_role.portal_execution.id
+  role       = aws_iam_role.sde_portal_execution.id
 }
 
-resource "aws_iam_role_policy_attachment" "read_openidc_secrets" {
-  policy_arn = aws_iam_policy.read_openidc_secrets.arn
-  role       = aws_iam_role.portal_execution.id
+resource "aws_iam_role_policy_attachment" "cdp_portal_ecs_task_execution" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  role       = aws_iam_role.cdp_portal_execution.id
+}
+
+resource "aws_iam_role_policy_attachment" "read_sde_openidc_secrets" {
+  policy_arn = aws_iam_policy.read_sde_openidc_secrets.arn
+  role       = aws_iam_role.sde_portal_execution.id
+}
+
+resource "aws_iam_role_policy_attachment" "read_cdp_openidc_secrets" {
+  policy_arn = aws_iam_policy.read_cdp_openidc_secrets.arn
+  role       = aws_iam_role.cdp_portal_execution.id
 }
 
 resource "aws_iam_role" "portal_task" {
@@ -264,5 +279,38 @@ resource "aws_iam_policy" "allow_ssm_read" {
 
 resource "aws_iam_role_policy_attachment" "ecs_allow_ssm_read" {
   policy_arn = aws_iam_policy.allow_ssm_read.arn
+  role       = aws_iam_role.portal_task.id
+}
+
+data "aws_iam_policy_document" "allow_imports_dynamodb_access" {
+  statement {
+    actions = [
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+      "dynamodb:UpdateItem",
+      "dynamodb:Query",
+      "dynamodb:Scan"
+    ]
+    resources = [aws_dynamodb_table.imports_workflow.arn]
+  }
+
+  statement {
+    actions = [
+      "kms:Decrypt",
+      "kms:Encrypt",
+      "kms:GenerateDataKey",
+      "kms:DescribeKey"
+    ]
+    resources = [module.imports_dynamodb_kms_key.key_arn]
+  }
+}
+
+resource "aws_iam_policy" "allow_imports_dynamodb_access" {
+  name   = "${var.environment_prefix}allow_imports_dynamodb_access"
+  policy = data.aws_iam_policy_document.allow_imports_dynamodb_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "allow_imports_dynamodb_access" {
+  policy_arn = aws_iam_policy.allow_imports_dynamodb_access.arn
   role       = aws_iam_role.portal_task.id
 }

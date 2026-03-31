@@ -1,28 +1,34 @@
-import React from "react";
-import { Metadata } from "next";
-import { cookies } from "next/headers";
-import { CookieNames } from "types/enums";
-import { redirect } from "next/navigation";
-import SetUpPasswordContent from "./_components/SetUpPasswordContent";
-import { verifyEmailAndGUID } from "./_components/serverActions";
-import { getLogger } from "helpers/logging/logger";
+import { getLogger } from 'helpers/logging/logger';
+import { Metadata } from 'next';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-const LOG = getLogger("SetUpPasswordPage");
+import { CookieNames } from '@/config/constants';
+import { getWhiteLabelValues } from '@/config/whiteLabel';
 
-export const metadata: Metadata = {
-  title: "Set up password",
-};
+import { verifyEmailAndGUID } from './_components/serverActions';
+import SetUpPasswordContent from './_components/SetUpPasswordContent';
+
+const LOG = getLogger('SetUpPasswordPage');
+
+export async function generateMetadata(): Promise<Metadata> {
+  const whiteLabelValues = getWhiteLabelValues();
+  return {
+    title: `Set up password - ${whiteLabelValues.acronym}`,
+  };
+}
 
 interface SetUpPasswordPageProps {
-  searchParams: { id?: string };
+  searchParams: Promise<{ id?: string }>;
 }
 
 export default async function SetUpPasswordPage({
-  searchParams: { id },
+  searchParams,
 }: SetUpPasswordPageProps) {
-  const email = cookies().get(CookieNames.CONFIRMED_EMAIL)?.value;
+  const email = (await cookies()).get(CookieNames.CONFIRMED_EMAIL)?.value;
+  const { id } = await searchParams;
   if (!email || !id) {
-    redirect("/");
+    redirect('/');
   }
 
   // checks again to ensure user has reached page legitimatley
@@ -30,10 +36,18 @@ export default async function SetUpPasswordPage({
   if (!isValid) {
     LOG.warn(
       { user_email: email, guid: id },
-      "User tried to access set-up-password page with invalid email or guid"
+      'User tried to access set-up-password page with invalid email or guid',
     );
-    redirect("/");
+    redirect('/');
   }
 
-  return <SetUpPasswordContent />;
+  const whiteLabelValues = getWhiteLabelValues();
+
+  return (
+    <SetUpPasswordContent
+      user_email={email}
+      guid={id}
+      whiteLabelValues={whiteLabelValues}
+    />
+  );
 }

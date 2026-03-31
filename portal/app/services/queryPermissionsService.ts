@@ -1,8 +1,9 @@
-import { List } from "cypress/types/lodash";
-import { notFound } from "next/navigation";
-import { getLogger } from "../../helpers/logging/logger";
+import { List } from 'cypress/types/lodash';
+import { notFound } from 'next/navigation';
 
-const logger = getLogger("manageUsers");
+import { getLogger } from '@/helpers/logging/logger';
+
+const logger = getLogger('manageUsers');
 
 interface queryPermissionsServiceProps {
   user_email: string;
@@ -11,7 +12,7 @@ interface queryPermissionsServiceProps {
   target_user?: string;
 }
 
-type Outcome = "grant" | "deny";
+type Outcome = 'grant' | 'deny';
 
 export interface PermissionServiceResponse {
   status: number;
@@ -45,10 +46,10 @@ export default async function queryPermissionsService({
 
     const request_url = `${base_url}?${query}`;
 
-    logger.debug({ state: "Fetching permissions API", url: request_url });
+    logger.debug({ state: 'Fetching permissions API', url: request_url });
 
     const response = await fetch(request_url, {
-      method: "GET",
+      method: 'GET',
     });
 
     if (response.status !== 200) {
@@ -71,8 +72,12 @@ export default async function queryPermissionsService({
       action: body.action,
       permitted_dsas: body.dsa,
     };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
-    logger.error({ state: "Error in fetch to permissions API", status: 500 });
-    throw new Error("Error in fetch to permissions API");
+    logger.error({
+      state: 'Error in fetch to permissions API',
+      status: 500,
+    });
+    throw new Error('Error in fetch to permissions API');
   }
 }

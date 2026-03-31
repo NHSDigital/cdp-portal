@@ -7,3 +7,13 @@
   display: flex;
   align-items: center;
 }
+
+.search_button {
+  line-height: 0.5;
+  font-size: 1rem;
+  width: auto;
+}
+
+.table_caption {
+  font-size: 26px;
+}

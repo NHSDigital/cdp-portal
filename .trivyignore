@@ -1,0 +1,21 @@
+# Exampe of just add CVE ID
+# CVE-2025-27789
+# We accept the risk of ignoring these Trivy concerns
+AVD-AWS-0066
+AVD-DS-0026
+AVD-DS-0002
+AVD-DS-0029
+AVD-AZU-0012
+# CVE-2025-15284
+# Reason: Fix deferred to new ticket as requires Cypress update with breaking changes.
+# Fix Ticket: SDE-11767
+# Team: Zouk
+# Expiry: 2026-02-28
+CVE-2025-15284
+# GHSA-h25m-26qc-wcjf & CVE-2025-59471 require NEXT major version update, SDE-11854 will resolve this
+GHSA-h25m-26qc-wcjf 
+CVE-2025-59471
+# Following should also be resolved with the update SDE-11854
+CVE-2026-25128
+CVE-2025-13465
+CVE-2026-29063

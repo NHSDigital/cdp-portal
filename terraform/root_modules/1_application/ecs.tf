@@ -1,144 +1,127 @@
-resource "aws_ecs_cluster" "portal" {
-  name = "${var.environment_prefix}portal"
-
-  setting {
-    name  = "containerInsights"
-    value = "enabled"
-  }
-}
-
 locals {
-  portal_port = 3000
+  portal_shared_environment_variables = {
+    NEXT_PUBLIC_KEYCLOAK_ISSUER   = var.keycloak_url
+    AWS_ENVIRONMENT               = var.environment
+    AWS_ENVIRONMENT_PREFIX        = var.environment_prefix
+    SWITCH_AGREEMENT_ARN          = local.switch_agreement_arn
+    SWITCH_AGREEMENT_ROLE_ARN     = local.switch_agreement_role_arn
+    LOG_LEVEL                     = "info"
+    DATA_UPLOAD_BUCKET_NAME       = module.data_in_landing.id
+    PERMISSIONS_API_GATEWAY_ID    = var.permissions_api_gateway_id
+    TABLE_NAME                    = aws_dynamodb_table.notices.id
+    MAX_UPLOAD_FILE_SIZE_IN_BYTES = tostring(var.max_upload_file_size_in_bytes)
+  }
+
+  sde_portal_environment_variables = {
+    KEYCLOAK_ID      = "portal"
+    NEXTAUTH_URL     = "https://${local.portal_full_domain_name}"
+    MAINTENANCE_MODE = tostring(var.sde_maintenance_mode)
+    PORTAL_SERVICE   = "SDE"
+  }
+
+  cdp_portal_environment_variables = {
+    KEYCLOAK_ID      = "cdp_portal"
+    NEXTAUTH_URL     = "https://${local.cdp_portal_full_domain_name}"
+    MAINTENANCE_MODE = tostring(var.cdp_maintenance_mode)
+    PORTAL_SERVICE   = "CDP"
+  }
 }
 
-resource "aws_ecs_task_definition" "portal" {
-  family                   = "${var.environment_prefix}portal"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = "2048"
-  memory                   = "4096"
-  network_mode             = "awsvpc"
-  execution_role_arn       = aws_iam_role.portal_execution.arn
-  task_role_arn            = aws_iam_role.portal_task.arn
+module "sde_portal" {
+  source = "../../modules/portal_ecs"
 
-  container_definitions = jsonencode([
+  name               = "${var.environment_prefix}sde-portal"
+  environment_prefix = var.environment_prefix
+  image              = "${aws_ecr_repository.portal.repository_url}:${var.image_tag}"
+  task_role_arn      = aws_iam_role.portal_task.arn
+  execution_role_arn = aws_iam_role.sde_portal_execution.arn
+  log_group_id       = module.ecs_logs.log_group_id
+  target_group_arn   = aws_lb_target_group.portal.arn
+  subnets_ids        = aws_subnet.private[*].id
+  security_group_ids = aws_security_group.portal_ecs.id
+
+  container_definition_secrets = [
     {
-      "readonlyRootFilesystem" = true
-      "essential"              = true
-      "image"                  = "${aws_ecr_repository.portal.repository_url}:${var.image_tag}"
-      "name"                   = "${var.environment_prefix}portal"
-      "portMappings" = [
-        {
-          "containerPort" = local.portal_port
-          "hostPort"      = local.portal_port
-          "protocol"      = "tcp"
-        },
-      ]
-      "secrets" = [
-        {
-          "name"      = "NEXTAUTH_SECRET"
-          "valueFrom" = aws_secretsmanager_secret.nextauth_secret.arn
-        },
-        {
-          "name"      = "KEYCLOAK_SECRET"
-          "valueFrom" = aws_secretsmanager_secret.portal_keycloak_secret.arn
-        }
-      ]
-      "environment" = concat(
-        [
-          for lambda_name, env_lambda_name in local.orchestration_lambda_names : {
-            "name"  = format("%s%s", upper(lambda_name), "_ARN")
-            "value" = "arn:aws:lambda:eu-west-2:${var.dare_orchestration_account_id}:function:${env_lambda_name}"
-          }
-        ],
-        // Add the rest of the environment variables
-        [
-          {
-            "name"  = "NEXT_PUBLIC_KEYCLOAK_ISSUER"
-            "value" = var.keycloak_url
-          },
-          {
-            "name"  = "KEYCLOAK_ID"
-            "value" = "portal"
-          },
-          {
-            "name"  = "NEXTAUTH_URL"
-            "value" = "https://${local.portal_full_domain_name}"
-          },
-          {
-            "name"  = "AWS_ENVIRONMENT"
-            "value" = var.environment
-          },
-          {
-            "name"  = "AWS_ENVIRONMENT_PREFIX",
-            "value" = var.environment_prefix
-          },
-          {
-            "name"  = "SWITCH_AGREEMENT_ARN",
-            "value" = local.switch_agreement_arn
-          },
-          {
-            "name"  = "SWITCH_AGREEMENT_ROLE_ARN"
-            "value" = local.switch_agreement_role_arn
-          },
-          {
-            "name"  = "LOG_LEVEL"
-            "value" = "info"
-          },
-          {
-            "name"  = "DATA_UPLOAD_BUCKET_NAME"
-            "value" = module.data_in_landing.id
-          },
-          {
-            "name"  = "PERMISSIONS_API_GATEWAY_ID"
-            "value" = var.permissions_api_gateway_id
-          },
-          {
-            "name"  = "TABLE_NAME"
-            "value" = aws_dynamodb_table.notices.id
-          },
-          {
-            "name"  = "MAINTENANCE_MODE",
-            "value" = tostring(var.maintenance_mode)
-          },
-        ]
-      )
-      "logConfiguration" = {
-        "logDriver" = "awslogs"
-        "options" = {
-          "awslogs-group"         = "${module.ecs_logs.log_group_id}"
-          "awslogs-region"        = "eu-west-2"
-          "awslogs-stream-prefix" = "ecs"
-        }
-      }
+      "name"      = "NEXTAUTH_SECRET"
+      "valueFrom" = aws_secretsmanager_secret.nextauth_secret.arn
+    },
+    {
+      "name"      = "KEYCLOAK_SECRET"
+      "valueFrom" = aws_secretsmanager_secret.portal_keycloak_secret.arn
     }
-  ])
+  ]
+
+  container_definitions_environments = concat(
+    // lambda names -> arns
+    [
+      for lambda_name, env_lambda_name in local.orchestration_lambda_names : {
+        "name"  = format("%s%s", upper(lambda_name), "_ARN")
+        "value" = "arn:aws:lambda:eu-west-2:${var.dare_orchestration_account_id}:function:${env_lambda_name}"
+      }
+    ],
+    // shared vars
+    [
+      for name, value in local.portal_shared_environment_variables : {
+        name  = name
+        value = value
+      }
+    ],
+    // sde specific vars
+    [
+      for name, value in local.sde_portal_environment_variables : {
+        name  = name
+        value = value
+      }
+    ]
+  )
 }
 
-resource "aws_ecs_service" "portal" {
-  name            = "${var.environment_prefix}portal"
-  cluster         = aws_ecs_cluster.portal.arn
-  task_definition = aws_ecs_task_definition.portal.arn
-  launch_type     = "FARGATE"
-  desired_count   = 3
 
-  health_check_grace_period_seconds = 180
-  wait_for_steady_state             = true
+module "cdp_portal" {
+  source = "../../modules/portal_ecs"
 
-  network_configuration {
-    security_groups = [
-      aws_security_group.portal_ecs.id
-    ]
-    subnets = aws_subnet.private[*].id
-  }
+  name               = "${var.environment_prefix}cdp-portal"
+  environment_prefix = var.environment_prefix
+  image              = "${aws_ecr_repository.portal.repository_url}:${var.image_tag}"
+  task_role_arn      = aws_iam_role.portal_task.arn
+  execution_role_arn = aws_iam_role.cdp_portal_execution.arn
+  log_group_id       = module.ecs_logs.log_group_id
+  target_group_arn   = aws_lb_target_group.cdp_portal.arn
+  subnets_ids        = aws_subnet.private[*].id
+  security_group_ids = aws_security_group.portal_ecs.id
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.portal.arn
-    container_name   = "${var.environment_prefix}portal"
-    container_port   = local.portal_port
-  }
-
-  depends_on = [
-    aws_iam_role.portal_execution,
-    aws_lb_listener_rule.portal
+  container_definition_secrets = [
+    {
+      "name"      = "NEXTAUTH_SECRET"
+      "valueFrom" = aws_secretsmanager_secret.cdp_nextauth_secret.arn
+    },
+    {
+      "name"      = "KEYCLOAK_SECRET"
+      "valueFrom" = aws_secretsmanager_secret.cdp_portal_client_secret.arn
+    }
   ]
+
+  container_definitions_environments = concat(
+    // lambda names -> arns 
+    [
+      for lambda_name, env_lambda_name in local.orchestration_lambda_names : {
+        "name"  = format("%s%s", upper(lambda_name), "_ARN")
+        "value" = "arn:aws:lambda:eu-west-2:${var.dare_orchestration_account_id}:function:${env_lambda_name}"
+      }
+    ],
+    // shared vars
+    [
+      for name, value in local.portal_shared_environment_variables : {
+        name  = name
+        value = value
+      }
+    ],
+    // cdp specific vars
+    [
+      for name, value in local.cdp_portal_environment_variables : {
+        name  = name
+        value = value
+      }
+    ]
+  )
 }

@@ -1,20 +1,34 @@
-import "./style.scss";
-import "../styles/NotificationBanner.css";
-import Header from "./layout/header";
-import Footer from "./layout/footer";
-import SessionProviderWrapper from "./layout/sessionProviderWrapper";
-import { getServerSession } from "next-auth";
-import NoScriptWarning from "./layout/noScriptWarning";
-import Notifications from "./layout/notifications";
+import './style.scss';
+import '../styles/NotificationBanner.css';
 
-export const metadata = {
-  title: {
-    template: "%s - SDE",
-    default: "SDE Web Portal",
-  },
-  description: "NHS Secure Data Environment",
+import { Metadata } from 'next';
+import { getServerSession } from 'next-auth';
+
+import { LayoutWrapper } from './layout/LayoutWrapper';
+import SessionProviderWrapper from './layout/sessionProviderWrapper';
+
+export const metadata: Metadata = {
   icons: {
-    icon: "/assets/favicons/favicon.png",
+    icon: { url: '/assets/favicons/favicon.png', sizes: '192x192' },
+    shortcut: { url: '/assets/favicons/favicon.ico', type: 'image/x-icon' },
+    apple: [
+      {
+        url: '/assets/favicons/apple-touch-icon.png',
+        type: 'image/png',
+      },
+      {
+        url: '/assets/favicons/apple-touch-icon-180x180.png',
+        sizes: '180x180',
+        type: 'image/png',
+      },
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/assets/favicons/favicon.svg',
+        color: '#005eb8',
+      },
+    ],
   },
 };
 
@@ -26,26 +40,10 @@ export default async function RootLayout({
   const initialSession = await getServerSession();
 
   return (
-    <html lang="en">
+    <html lang='en'>
       <body>
         <SessionProviderWrapper initialSession={initialSession}>
-          <a className="nhsuk-skip-link" href="#maincontent">
-            Skip to main content
-          </a>
-          <div>
-            <Header />
-            <div className="nhsuk-width-container">
-              <Notifications />
-              <NoScriptWarning />
-              <main
-                className="nhsuk-main-wrapper nhsuk-u-padding-top-4"
-                id="maincontent"
-              >
-                {children}
-              </main>
-            </div>
-          </div>
-          <Footer />
+          <LayoutWrapper>{children}</LayoutWrapper>
         </SessionProviderWrapper>
       </body>
     </html>

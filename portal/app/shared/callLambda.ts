@@ -1,12 +1,14 @@
-import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
-import { Logger } from "pino";
-import { logAndError } from "./common";
+import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda';
+import { Logger } from 'pino';
+
+import { logAndError } from './common';
 
 const encoder = new TextEncoder();
-const client = new LambdaClient({ region: "eu-west-2" });
+const client = new LambdaClient({ region: 'eu-west-2' });
 
 interface CallLambda {
   function_name: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   raw_payload: { [key: string]: any };
   logger: Logger;
   log_result?: boolean;
@@ -29,23 +31,24 @@ export default async function callLambdaWithFullErrorChecking({
   });
 
   if (
-    typeof resultJson?.statusCode !== "number" ||
+    typeof resultJson?.statusCode !== 'number' ||
     resultJson.statusCode < 200 ||
     resultJson.statusCode >= 300
   ) {
     logAndError(
       child_logger,
-      `Lambda ${function_name} returned a non 200 status code`
+      `Lambda ${function_name} returned a non 200 status code`,
     );
   }
 
-  child_logger.info("Lambda call successful");
+  child_logger.info('Lambda call successful');
 
   return resultJson;
 }
 
 interface InvokeLambda {
   function_name: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   raw_payload: { [key: string]: any };
   logger: Logger;
   log_result?: boolean;
@@ -68,23 +71,23 @@ export async function callLambdaWithoutFullErrorChecking({
   });
 
   const res = await client.send(command);
-  if (function_name.endsWith("change_user_activation"))
+  if (function_name.endsWith('change_user_activation'))
     logger.error(
       { StatusCode: res.StatusCode, FunctionError: res.FunctionError },
-      "RES!!!"
+      'RES!!!',
     );
   const { Payload, StatusCode, FunctionError } = res;
 
   if (!StatusCode || StatusCode < 200 || StatusCode >= 300) {
     logAndError(
       logger,
-      `Lambda ${function_name} gave a non 2xx status code, this is an error`
+      `Lambda ${function_name} gave a non 2xx status code, this is an error`,
     );
   }
   if (!Payload) {
     logAndError(
       logger,
-      `Lambda ${function_name} returned no payload, this is an error`
+      `Lambda ${function_name} returned no payload, this is an error`,
     );
   }
   if (FunctionError) {

@@ -1,21 +1,28 @@
-import React from "react";
-import ConfirmEmailAddressPageContent from "./_components/ConfirmEmailAddressContent";
-import { redirect } from "next/navigation";
-import { Metadata } from "next";
+import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import React from 'react';
 
-export const metadata: Metadata = {
-  title: "Confirm email address",
-};
+import { getWhiteLabelValues } from '@/config/whiteLabel';
 
-interface ConfirmEmailAddressPageProps {
-  searchParams: { id?: string };
+import ConfirmEmailAddressPageContent from './_components/ConfirmEmailAddressContent';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const whiteLabelValues = getWhiteLabelValues();
+  return {
+    title: `Confirm email address - ${whiteLabelValues.acronym}`,
+  };
 }
 
-export default function ConfirmEmailAddressPage({
-  searchParams: { id },
+interface ConfirmEmailAddressPageProps {
+  searchParams: Promise<{ id?: string }>;
+}
+
+export default async function ConfirmEmailAddressPage({
+  searchParams,
 }: ConfirmEmailAddressPageProps) {
-  if (!id || typeof id != "string") {
-    redirect("/");
+  const { id } = await searchParams;
+  if (!id || typeof id != 'string') {
+    redirect('/');
   }
 
   return id && <ConfirmEmailAddressPageContent id={id} />;

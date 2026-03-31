@@ -1,8 +1,17 @@
-import { Metadata } from "next";
+import { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: "Maintenance Page",
-};
+import {
+  NATIONAL_SERVICE_DESK_EMAIL,
+  NATIONAL_SERVICE_DESK_TELEPHONE,
+} from '@/config/constants';
+import { getWhiteLabelValues } from '@/config/whiteLabel';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const whiteLabelValues = getWhiteLabelValues();
+  return {
+    title: `Maintenance page - ${whiteLabelValues.acronym}`,
+  };
+}
 
 export default function MaintenancePage() {
   return (
@@ -13,10 +22,14 @@ export default function MaintenancePage() {
         soon. This should not take more than a few hours.
       </p>
       <p>
-        If you have an urgent issue, contact the National Service Desk on 0300
-        303 5035, or email{" "}
-        <a href="mailto:ssd.nationalservicedesk@nhs.net" target="_blank">
-          ssd.nationalservicedesk@nhs.net
+        If you have an urgent issue, contact the National Service Desk on{' '}
+        {NATIONAL_SERVICE_DESK_TELEPHONE} or email{' '}
+        <a
+          href={`mailto:${NATIONAL_SERVICE_DESK_EMAIL}`}
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          {NATIONAL_SERVICE_DESK_EMAIL}
         </a>
       </p>
     </>

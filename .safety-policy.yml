@@ -1,0 +1,64 @@
+security:
+  ignore-cvss-unknown-severity: False
+  ignore-vulnerabilities:
+    73969:
+      reason: To be reviewed under SDE-11130
+      expires: '2025-12-01'
+    73889:
+      reason: To be reviewed under SDE-11131
+      expires: '2025-12-01'
+    77744:
+      reason: To be reviewed under SDE-11132
+      expires: '2025-12-01'
+    77745:
+      reason: To be reviewed under SDE-11133
+      expires: '2025-12-01'
+    72236:
+      reason: To be reviewed under SDE-11134
+      expires: '2025-12-01'
+    76752:
+      reason: To be reviewed under SDE-11135
+      expires: '2025-12-01'
+    77680:
+      reason: To be reviewed under SDE-11136
+      expires: '2025-12-01'
+    76378:
+      reason: To be reviewed under SDE-11137
+      expires: '2025-12-01'
+    74735:
+      reason: To be reviewed under SDE-11138
+      expires: '2025-12-01'
+    75976:
+      reason: To be reviewed under SDE-11139
+      expires: '2025-12-01'
+    76170:
+      reason: To be reviewed under SDE-11140
+      expires: '2025-12-01'
+    79408:
+      reason: To be reviewed under SDE-11145
+      expires: '2025-12-01'
+    62044:
+      reason: To be reviewed under SDE-11148
+      expires: '2025-12-01'
+    75180:
+      reason: To be reviewed under SDE-11149
+      expires: '2025-12-01'
+    66742:
+      reason: To be reviewed under SDE-11150
+      expires: '2025-12-01'
+    71594:
+      reason: To be reviewed under SDE-11151
+      expires: '2025-12-01'
+    71595:
+      reason: To be reviewed under SDE-11152
+      expires: '2025-12-01'
+    62019:
+      reason: To be reviewed under SDE-11153
+      expires: '2025-12-01'
+    53326:
+      reason: To be reviewed under SDE-11154
+      expires: '2025-12-01'
+    53325:
+      reason: To be reviewed under SDE-11155
+      expires: '2025-12-01'
+  continue-on-vulnerability-error: True

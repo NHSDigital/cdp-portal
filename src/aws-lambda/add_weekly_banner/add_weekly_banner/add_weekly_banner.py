@@ -29,8 +29,9 @@ def lambda_handler(event, context):
     # Calculate the number of days until next Wednesday
     days_until_wednesday = (2 - now.weekday()) % 7
 
-    # Calculate the target date and time for next Wednesday
-    target_date = now + timedelta(days=days_until_wednesday)
+    # Calculate the target date and time for next Wednesday. Normalize is needed to ensure that the time is generated
+    # correctly for banners the week immediately after a clock change
+    target_date = tz.normalize(now + timedelta(days=days_until_wednesday))
 
     target_start_date_time = target_date.replace(
         hour=7, minute=0, second=0, microsecond=0

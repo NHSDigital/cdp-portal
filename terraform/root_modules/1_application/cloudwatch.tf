@@ -34,6 +34,7 @@ module "cloudwatch_log_kms_key" {
   environment = var.environment
   policies    = [data.aws_iam_policy_document.allow_cloudwatch_logs_kms_access.json]
 
-  admin_role_arns      = local.kms_key_owner_arns
-  sso_admin_role_names = var.sso_admin_role_names
+  admin_role_arns          = local.kms_key_owner_arns
+  sso_admin_role_names     = var.sso_admin_role_names
+  sso_read_only_role_names = var.sso_read_only_role_names
 }

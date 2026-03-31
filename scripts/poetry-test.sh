@@ -19,10 +19,10 @@ BANNER
 cd "src/aws-lambda/$PARENT_PROJECT"
 
 echo "Checking lockfile"
-poetry lock --check
+poetry check --lock
 
 echo "Installing dependencies"
-poetry install --with dev --no-root --sync
+poetry -q sync --with dev --no-root
 
 echo "Running tests"
 poetry run pytest

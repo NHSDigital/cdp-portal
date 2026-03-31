@@ -1,6 +1,6 @@
-import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb';
 
-const client = new DynamoDBClient({ region: "eu-west-2" });
+const client = new DynamoDBClient({ region: 'eu-west-2' });
 
 const tableName = process.env.TABLE_NAME;
 
@@ -14,28 +14,31 @@ export interface Notices {
   notificationItems: Notice[];
 }
 
-const removeDuplicateNotifications = (notificationItems) => {
-  return notificationItems.filter(
-    (value, index, self) =>
+const removeDuplicateNotifications = (
+  notificationItems: Notice[],
+): Notice[] => {
+  return notificationItems.filter((value, index, self) => {
+    return (
       index === self.findIndex((t) => t.notification === value.notification)
-  );
+    );
+  });
 };
 
-const getNotifications = async () => {
+const getNotifications = async (): Promise<Notice[]> => {
   const current_epoch = Math.round(Date.now() / 1000).toString();
 
   const command = new ScanCommand({
     TableName: tableName,
-    FilterExpression: "#expiryPeriod >= :expiryPeriod",
-    ExpressionAttributeNames: { "#expiryPeriod": "expiryPeriod" },
+    FilterExpression: '#expiryPeriod >= :expiryPeriod',
+    ExpressionAttributeNames: { '#expiryPeriod': 'expiryPeriod' },
     ExpressionAttributeValues: {
-      ":expiryPeriod": { N: current_epoch },
+      ':expiryPeriod': { N: current_epoch },
     },
   });
 
   const response = await client.send(command);
   const current = Date.now() / 1000;
-  const colour_list = ["red", "blue", "yellow"];
+  const colour_list = ['red', 'blue', 'yellow'];
 
   if (!response.Items) {
     response.Items = [];
@@ -49,7 +52,7 @@ const getNotifications = async () => {
 
     // Sets default colour to blue
     if (!colour_list.includes(colour)) {
-      colour = "blue";
+      colour = 'blue';
     }
 
     return {

@@ -1,12 +1,12 @@
 import json
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from dataclasses import dataclass
 from unittest.mock import Mock
 
 import pytest
 from aws_lambda_powertools.utilities.data_classes import SNSEvent
-from moto import mock_logs
+from moto import mock_aws
 from urllib3 import HTTPResponse
 
 AWS_REGION = os.getenv("AWS_REGION", "eu-west-2")
@@ -64,8 +64,8 @@ def log_event_timestamp(offset_seconds: int):
 
 
 def slack_message_timestamp(offset_seconds: int):
-    return datetime.utcfromtimestamp(
-        log_event_timestamp(offset_seconds) / 1000
+    return datetime.fromtimestamp(
+        log_event_timestamp(offset_seconds) / 1000, UTC
     ).isoformat()
 
 
@@ -81,7 +81,7 @@ def lambda_context():
     return LambdaContext()
 
 
-@mock_logs
+@mock_aws
 def test_do_nothing_for_sns_setup_message(monkeypatch, lambda_context):
     monkeypatch.setenv("SLACK_HOOK_URL", test_slack_hook_url)
     import slack_alert.slack_alert as main
@@ -97,7 +97,7 @@ def test_do_nothing_for_sns_setup_message(monkeypatch, lambda_context):
     mock_http.request.assert_not_called()
 
 
-@mock_logs
+@mock_aws
 def test_simple_message_for_stopped_ecs_task(monkeypatch, lambda_context):
     monkeypatch.setenv("SLACK_HOOK_URL", test_slack_hook_url)
     import slack_alert.slack_alert as main
@@ -162,7 +162,7 @@ def test_simple_message_for_stopped_ecs_task(monkeypatch, lambda_context):
     )
 
 
-@mock_logs
+@mock_aws
 def test_message_when_metric_filter_not_found(monkeypatch, lambda_context):
     monkeypatch.setenv("SLACK_HOOK_URL", test_slack_hook_url)
     import slack_alert.slack_alert as main
@@ -243,7 +243,7 @@ def test_message_when_metric_filter_not_found(monkeypatch, lambda_context):
     )
 
 
-@mock_logs
+@mock_aws
 def test_message_when_no_log_entries(monkeypatch, lambda_context):
     monkeypatch.setenv("SLACK_HOOK_URL", test_slack_hook_url)
     import slack_alert.slack_alert as main
@@ -302,7 +302,7 @@ def test_message_when_no_log_entries(monkeypatch, lambda_context):
     )
 
 
-@mock_logs
+@mock_aws
 def test_message_when_there_is_a_matching_string_log_entry(monkeypatch, lambda_context):
     monkeypatch.setenv("SLACK_HOOK_URL", test_slack_hook_url)
     import slack_alert.slack_alert as main
@@ -381,7 +381,7 @@ def test_message_when_there_is_a_matching_string_log_entry(monkeypatch, lambda_c
     )
 
 
-@mock_logs
+@mock_aws
 def test_message_when_there_is_a_matching_json_log_entry(monkeypatch, lambda_context):
     monkeypatch.setenv("SLACK_HOOK_URL", test_slack_hook_url)
     import slack_alert.slack_alert as main
@@ -469,7 +469,7 @@ def test_message_when_there_is_a_matching_json_log_entry(monkeypatch, lambda_con
     )
 
 
-@mock_logs
+@mock_aws
 def test_message_when_there_is_a_big_matching_json_log_entry(
     monkeypatch, lambda_context
 ):
@@ -574,7 +574,7 @@ def test_message_when_there_is_a_big_matching_json_log_entry(
     )
 
 
-@mock_logs
+@mock_aws
 def test_message_when_there_is_a_matching_json_exception_log_entry(
     monkeypatch, lambda_context
 ):
@@ -664,7 +664,7 @@ def test_message_when_there_is_a_matching_json_exception_log_entry(
     )
 
 
-@mock_logs
+@mock_aws
 def test_message_when_there_are_multiple_matching_log_entries(
     monkeypatch, lambda_context
 ):
@@ -774,7 +774,7 @@ def test_message_when_there_are_multiple_matching_log_entries(
     )
 
 
-@mock_logs
+@mock_aws
 def test_message_does_not_get_events_outside_range(monkeypatch, lambda_context):
     monkeypatch.setenv("SLACK_HOOK_URL", test_slack_hook_url)
     import slack_alert.slack_alert as main

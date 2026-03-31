@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { Button } from "nhsuk-react-components";
-import React from "react";
+import Link from 'next/link';
+import { Button } from 'nhsuk-react-components';
+import React from 'react';
 
 interface Props {
   agreement_id: string;
@@ -16,9 +16,9 @@ export default function OpenAgreementButton({
       // @ts-ignore
       as={Link}
       href={`/agreement/${agreement_id}`}
-      className="agreementButton"
+      className='agreementButton'
     >
-      Open{" "}
+      Open{' '}
       {meaningful_name
         ? `${meaningful_name} (${agreement_id})`
         : `${agreement_id}`}

@@ -1,22 +1,24 @@
-import getSSMParameter from "./getSSMParameter";
-import { getLogger } from "../../helpers/logging/logger";
+import { getLogger } from '../../helpers/logging/logger';
+import getSSMParameter from './getSSMParameter';
 
-const logger = getLogger("hasFeatureFlagEnabledGivenCookies");
+const logger = getLogger('hasFeatureFlagEnabledGivenCookies');
 
-const FEATURE_FLAG_PREFIX: string =
-  process.env.AWS_ENVIRONMENT_PREFIX !== undefined
+function getFeatureFlagPrefix(): string {
+  return process.env.AWS_ENVIRONMENT_PREFIX !== undefined
     ? `/${process.env.AWS_ENVIRONMENT_PREFIX}portal/feature-flags/`
-    : "/portal/feature-flags/";
+    : '/portal/feature-flags/';
+}
 
 export async function hasFeatureFlagEnabledGivenContextReq({
   featureFlagName,
   context_req,
 }: {
   featureFlagName: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context_req: any;
 }): Promise<boolean> {
   const ff_cookie_enabled =
-    context_req.cookies[`FEATURE-FLAG-${featureFlagName}`] === "true";
+    context_req.cookies[`FEATURE-FLAG-${featureFlagName}`] === 'true';
 
   return hasFeatureFlagEnabledGivenCookies({
     featureFlagName,
@@ -31,6 +33,7 @@ export default async function hasFeatureFlagEnabledGivenCookies({
   featureFlagName: string;
   ff_cookie_enabled: boolean;
 }): Promise<boolean> {
+  const FEATURE_FLAG_PREFIX = getFeatureFlagPrefix();
   const parameterName = `${FEATURE_FLAG_PREFIX}${featureFlagName}`;
 
   const response = await getSSMParameter({
@@ -38,16 +41,16 @@ export default async function hasFeatureFlagEnabledGivenCookies({
   });
 
   switch (response?.toLowerCase()) {
-    case "on":
-    case "true":
+    case 'on':
+    case 'true':
       return true;
-    case "off":
-    case "false":
+    case 'off':
+    case 'false':
       return false;
-    case "off_without_cookie":
+    case 'off_without_cookie':
       if (ff_cookie_enabled) {
         logger.debug({
-          state: "Feature flag enabled by cookie",
+          state: 'Feature flag enabled by cookie',
           featureFlagName: featureFlagName,
         });
         return true;
@@ -57,7 +60,7 @@ export default async function hasFeatureFlagEnabledGivenCookies({
 
     default:
       logger.error({
-        state: "Invalid feature flag value",
+        state: 'Invalid feature flag value',
         value: response,
       });
       return false;

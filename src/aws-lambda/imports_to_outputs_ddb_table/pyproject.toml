@@ -1,0 +1,35 @@
+[project]
+name = "imports-to-outputs-ddb-table"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Priyadarshini Raman",email = "priyadarshini.raman1@nhs.net"}
+]
+readme = "README.md"
+requires-python = ">=3.13,<4.0.0"
+dependencies = [
+    "boto3 (>=1.42.68,<2.0.0)",
+    "aws-lambda-powertools (>=3.25.0,<4.0.0)",
+    "datetime (>=6.0,<7.0)",
+    "botocore (>=1.42.68,<2.0.0)",
+    "dataclasses-json (>=0.6.7,<0.7.0)"
+]
+
+[tool.poetry]
+packages = [{include = "imports_to_outputs_ddb_table"}]
+
+
+[tool.poetry.group.dev.dependencies]
+moto = "^5.1.22"
+pytest = "^9.0.2"
+boto3 = "^1.42.69"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "./imports_to_outputs_ddb_table"
+]

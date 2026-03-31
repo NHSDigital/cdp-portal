@@ -62,6 +62,30 @@ data "aws_iam_policy_document" "allow_access_to_kms_key" {
       ]
     }
   }
+  statement {
+    sid = "AllowSSOReadOnlyAccessToKmsKey"
+    actions = [
+      "kms:Describe*",
+      "kms:Get*",
+      "kms:List*"
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    resources = ["*"]
+
+    condition {
+      test     = "ArnLike"
+      variable = "aws:PrincipalArn"
+      values = [
+        for role_name in var.sso_read_only_role_names :
+        "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_${role_name}_????????????????"
+      ]
+    }
+  }
 }
 
 data "aws_caller_identity" "this" {}

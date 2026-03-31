@@ -1,4 +1,4 @@
-from os import system, name
+from os import name, system
 
 
 def clear():
@@ -7,8 +7,10 @@ def clear():
     """
     system_is_windows = name == "nt"
     if system_is_windows:
-        system("cls")
+        # Only ever ran by dev locally so not security concern
+        system("cls")  # nosec
 
     # Mac and Linux
     else:
-        system("clear")
+        # Only ever ran by dev locally so not security concern
+        system("clear")  # nosec

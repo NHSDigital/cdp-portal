@@ -4,8 +4,9 @@ module "secrets_kms_key" {
   policies    = [data.aws_iam_policy_document.allow_secrets_kms_access.json]
   environment = var.environment
 
-  admin_role_arns      = local.kms_key_owner_arns
-  sso_admin_role_names = var.sso_admin_role_names
+  admin_role_arns          = local.kms_key_owner_arns
+  sso_admin_role_names     = var.sso_admin_role_names
+  sso_read_only_role_names = var.sso_read_only_role_names
 }
 
 data "aws_iam_policy_document" "allow_secrets_kms_access" {
@@ -49,9 +50,21 @@ resource "aws_secretsmanager_secret" "portal_keycloak_secret" {
   kms_key_id  = module.secrets_kms_key.key_arn
 }
 
+resource "aws_secretsmanager_secret" "cdp_portal_client_secret" {
+  name        = "${var.environment_prefix}keycloak/cdp_portal_client_secret" //NOSONAR
+  description = "The portal's CDP OpenID Client Secret in Keycloak"
+  kms_key_id  = module.secrets_kms_key.key_arn
+}
+
 resource "aws_secretsmanager_secret" "nextauth_secret" {
   name        = "${var.environment_prefix}nextauth/encryption_secret" //NOSONAR
   description = "The secret used for encyption of the next auth JS JWT"
+  kms_key_id  = module.secrets_kms_key.key_arn
+}
+
+resource "aws_secretsmanager_secret" "cdp_nextauth_secret" {
+  name        = "${var.environment_prefix}nextauth/cdp_encryption_secret" //NOSONAR
+  description = "The secret used for encyption of the next auth JS JWT for CDP"
   kms_key_id  = module.secrets_kms_key.key_arn
 }
 
@@ -68,7 +81,7 @@ data "aws_iam_policy_document" "use_secrets_kms_key" {
   }
 }
 
-data "aws_iam_policy_document" "read_openidc_secrets" {
+data "aws_iam_policy_document" "read_sde_openidc_secrets" {
   source_policy_documents = [data.aws_iam_policy_document.use_secrets_kms_key.json]
 
   statement {
@@ -80,7 +93,24 @@ data "aws_iam_policy_document" "read_openidc_secrets" {
   }
 }
 
-resource "aws_iam_policy" "read_openidc_secrets" {
-  name   = "${var.environment_prefix}read_openidc_secrets"
-  policy = data.aws_iam_policy_document.read_openidc_secrets.json
+resource "aws_iam_policy" "read_sde_openidc_secrets" {
+  name   = "${var.environment_prefix}read_sde_openidc_secrets"
+  policy = data.aws_iam_policy_document.read_sde_openidc_secrets.json
+}
+
+data "aws_iam_policy_document" "read_cdp_openidc_secrets" {
+  source_policy_documents = [data.aws_iam_policy_document.use_secrets_kms_key.json]
+
+  statement {
+    actions = ["secretsmanager:GetSecretValue"]
+    resources = [
+      aws_secretsmanager_secret.cdp_portal_client_secret.arn,
+      aws_secretsmanager_secret.cdp_nextauth_secret.arn,
+    ]
+  }
+}
+
+resource "aws_iam_policy" "read_cdp_openidc_secrets" {
+  name   = "${var.environment_prefix}read_cdp_openidc_secrets"
+  policy = data.aws_iam_policy_document.read_cdp_openidc_secrets.json
 }
